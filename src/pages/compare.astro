@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CompareTable from '../components/CompareTable.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { RIVALS } from '../data/content';
+---
+<Base title="Compare" description="Dockmesh compared with Portainer CE, Portainer Business, Dockge and plain docker compose — including what the alternatives do better." current="compare" searchKind="Website">
+  <PageHero kicker="Compare" title="How Dockmesh compares." lede="An honest table, and what the alternatives do better." />
+  <section class="sec"><div class="dm-wrap">
+    <CompareTable />
+    <p style="font-size:14px;margin-top:12px;color:var(--subtle)">Portainer Business is a paid subscription priced per node; see Portainer's pricing page for current prices. Comparison as of the latest Dockmesh release.</p>
+  </div></section>
+  <section class="sec band"><div class="dm-wrap">
+    <div class="sechead"><h2>When to pick something else</h2></div>
+    {RIVALS.map((r) => (
+      <div class="rival">
+        <div><h3>{r.name}</h3><p>{r.tagline}</p></div>
+        <div><p class="kicker" style="color:var(--ok)">Better at</p><ul class="bullets">{r.goodAt.map((g) => <li>{g}</li>)}</ul></div>
+        <div><p class="kicker" style="color:var(--subtle)">Where Dockmesh differs</p><ul class="bullets">{r.gap.map((g) => <li>{g}</li>)}</ul><p class="verdict">{r.verdict}</p></div>
+      </div>
+    ))}
+  </div></section>
+  <ClosingCta />
+</Base>

@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import { LINKS } from '../data/site';
+---
+<Base title="About & FAQ" description="Why Dockmesh is free, who maintains it, what happens if the project stops, telemetry and other questions." searchKind="Website">
+  <PageHero kicker="About" title="A free tool you should be suspicious of." lede="Putting infrastructure on something free deserves questions. Here are the answers, including the uncomfortable ones." />
+  <section class="sec"><div class="dm-wrap about-grid">
+    <div class="prose-dm">
+      <h2>Why it is free</h2>
+      <p>Dockmesh started because the useful parts of other tools — roles, single sign-on, an audit log — sat behind a paid tier. It is licensed AGPL-3.0 so that nobody can take it, close it and sell it back. There is no plan for a paid edition.</p>
+      <h2>Who maintains it</h2>
+      <p>One developer, in spare time. That keeps the focus on things that work, and it means releases come when they are ready.</p>
+      <h2>If the project stops</h2>
+      <p>Your stacks are compose files on disk and your containers run on Docker. Without Dockmesh you keep both; backups are standard archives encrypted with age. The code stays public under the AGPL and anyone can continue it.</p>
+      <h2>Everything here can be checked</h2>
+      <p>The source is complete and public, including every outbound connection the server makes. Image scans run Grype, which fetches its own vulnerability database. Read the code, or put a firewall rule in front and watch.</p>
+      <p><a href={LINKS.github}>Source on GitHub →</a></p>
+    </div>
+    <div><h2 style="font-size:22px;margin-bottom:8px">FAQ</h2><Faq /></div>
+  </div></section>
+</Base>
+<style>
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
+  @media (max-width: 980px) { .about-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,39 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import SearchDialog from './SearchDialog.astro';
+import { NAV, LINKS } from '../data/site';
+
+interface Props { current?: string; nested?: boolean }
+const { current, nested } = Astro.props;
+// Starlight wraps its Header slot in a <header> already; a second banner landmark inside it is invalid.
+const Top = nested ? 'div' : 'header';
+---
+<Top class="dm-top">
+  <div class="dm-wrap">
+    <a class="dm-brand" href="/" aria-label="Dockmesh home"><Logo uid="h" /><b>dock<span>mesh</span></b></a>
+    <nav class="dm-nav" aria-label="Site">
+      {NAV.map((n) => <a href={n.href} aria-current={n.key === current ? 'page' : undefined}>{n.label}</a>)}
+    </nav>
+    <span class="dm-sp"></span>
+    <button class="dm-searchbtn" type="button" data-dm-search aria-label="Search docs… Ctrl K" aria-keyshortcuts="Control+K /">
+      <Icon name="search" size={15} /><span>Search docs…</span><kbd class="dm-kbd">Ctrl K</kbd>
+    </button>
+    <button class="dm-icon dm-theme" type="button" data-dm-theme aria-label="Switch to light theme">
+      <Icon name="sun" class="sun" /><Icon name="moon" class="moon" />
+    </button>
+    <a class="dm-icon" href={LINKS.github} aria-label="Dockmesh on GitHub"><Icon name="github" size={17} /></a>
+    <a class="dm-btn pri dm-install" href={LINKS.install}>Install</a>
+    <button class="dm-icon dm-menubtn" type="button" data-dm-menu aria-label="Menu" aria-expanded="false" aria-controls="dm-mobnav"><Icon name="menu" size={18} /></button>
+  </div>
+</Top>
+<nav class="dm-mobnav" id="dm-mobnav" aria-label="Site">
+  {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
+  <a href="/about/">About &amp; FAQ</a>
+  <a href={LINKS.install}>Install</a>
+  <a href={LINKS.github}>GitHub</a>
+</nav>
+<SearchDialog />
+<script>
+  import '../scripts/site';
+</script>

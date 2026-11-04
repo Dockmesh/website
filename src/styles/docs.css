@@ -1,0 +1,131 @@
+@import "./tokens.css";
+@import "./chrome.css";
+
+:root, :root[data-theme="light"] {
+  --sl-font: var(--font-ui);
+  --sl-font-mono: var(--font-code);
+  --sl-nav-height: var(--nav-h);
+  --sl-nav-pad-x: 16px;
+  --sl-menu-button-size: 36px;
+  --sl-nav-pad-y: 0px;
+  --sl-sidebar-width: 260px;
+  --dm-docs-max: 1400px;
+  --dm-docs-gutter: max(0px, (100% - var(--dm-docs-max)) / 2);
+  --sl-content-width: 46rem;
+  --sl-text-base: 1rem;
+  --sl-line-height: 1.65;
+
+  --sl-color-accent-low: var(--accent-soft);
+  --sl-color-accent: var(--accent);
+  --sl-color-accent-high: var(--accent2);
+  --sl-color-text-accent: var(--accent);
+  --sl-color-text-invert: var(--on-accent);
+  --sl-color-white: var(--fg);
+  --sl-color-gray-1: var(--fg);
+  --sl-color-gray-2: color-mix(in srgb, var(--fg) 86%, var(--bg));
+  --sl-color-gray-3: var(--muted);
+  --sl-color-gray-4: var(--subtle);
+  --sl-color-gray-5: var(--border2);
+  --sl-color-gray-6: var(--border);
+  --sl-color-gray-7: var(--surface);
+  --sl-color-black: var(--bg);
+  --sl-color-bg: var(--bg);
+  --sl-color-bg-nav: transparent;
+  --sl-color-bg-sidebar: var(--bg);
+  --sl-color-bg-inline-code: var(--code);
+  --sl-color-hairline: var(--border);
+  --sl-color-hairline-light: var(--border);
+  --sl-color-hairline-shade: var(--border);
+  --sl-color-text: color-mix(in srgb, var(--fg) 86%, var(--bg));
+}
+
+body { background: var(--bg); }
+
+/* our header inside Starlight's fixed header bar */
+.page > .header { border-bottom: 0; padding: 0 !important; }
+.page > .header .dm-top { position: static; }
+
+/* sidebar */
+.sidebar-content { padding: 22px 18px 40px 24px; }
+.sidebar-content .top-level > li > details > summary .group-label > span,
+.sidebar-content summary .large { font-size: 12.5px; font-weight: 600; color: var(--fg); }
+.sidebar-content a { font-size: 14.5px; color: var(--muted); border-radius: 6px; padding: 5px 10px; line-height: 1.35; }
+.sidebar-content a:hover { color: var(--fg); background: var(--band); }
+.sidebar-content a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+/* version label above the navigation */
+.dm-docver { margin: 0 0 14px 10px; font: 600 12px var(--font-code); color: var(--subtle); letter-spacing: .02em; }
+.dm-lastupdated { margin-top: 12px; font-size: 13px; color: var(--subtle); }
+.dm-lastupdated p { margin: 0; }
+/* Docs sit in one centred block (sidebar | content | TOC), like the prototype. */
+@media (min-width: 50rem) {
+  .sidebar-pane { border-inline-end: 1px solid var(--border); inset-inline-start: var(--dm-docs-gutter); }
+  .main-frame { padding-inline-start: calc(var(--dm-docs-gutter) + var(--sl-sidebar-width)); padding-inline-end: var(--dm-docs-gutter); }
+}
+
+/* content */
+.content-panel { padding-top: 34px; }
+.sl-markdown-content h1, h1#_top { font-size: 38px; letter-spacing: -0.022em; line-height: 1.15; font-weight: 700; color: var(--fg); }
+.sl-markdown-content h2 { font-size: 25px; letter-spacing: -0.02em; margin-top: 2.6rem; color: var(--fg); }
+.sl-markdown-content h3 { font-size: 19px; color: var(--fg); }
+.sl-markdown-content h4 { font-size: 16px; color: var(--fg); }
+.sl-markdown-content a { color: var(--accent); text-underline-offset: 2px; }
+.sl-markdown-content :not(pre) > code { font-size: 0.88em; background: var(--code); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; color: var(--fg); }
+.sl-markdown-content table { font-size: 14.5px; display: block; overflow-x: auto; }
+.sl-markdown-content th, .sl-markdown-content td { border-bottom: 1px solid var(--border); padding: 9px 12px; vertical-align: top; }
+.sl-markdown-content th { font-size: 13px; color: var(--subtle); font-weight: 600; border-bottom-color: var(--border2); background: none; }
+.sl-markdown-content tr:nth-child(2n) { background: none; }
+.sl-markdown-content blockquote { padding: 10px 16px; border-inline-start: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; color: var(--muted); }
+.sl-markdown-content .dm-code { margin-block: 1.2rem; }
+.sl-markdown-content .dm-code pre code { color: inherit; }
+.starlight-aside { border-radius: 0 8px 8px 0; }
+
+/* right-hand table of contents */
+starlight-toc h2, mobile-starlight-toc h2 { font-size: 12.5px; color: var(--fg); font-weight: 600; }
+starlight-toc a { color: var(--subtle); font-size: 13.5px; border-inline-start: 1px solid var(--border); padding-inline-start: 12px !important; }
+starlight-toc a:hover { color: var(--fg); }
+starlight-toc a[aria-current="true"] { color: var(--accent); border-inline-start-color: var(--accent); }
+
+/* pagination + doc footer */
+.pagination-links a { border: 1px solid var(--border); border-radius: 10px; box-shadow: none; color: var(--fg); }
+.pagination-links a:hover { border-color: var(--accent); }
+.pagination-links .link-title { font-size: 15px; font-weight: 600; color: var(--fg); }
+.dm-docfoot-wrap { margin-top: 3rem; }
+.dm-docfoot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 18px; flex-wrap: wrap; font-size: 13.5px; color: var(--subtle); }
+.dm-docfoot a { color: var(--subtle); text-decoration: none; }
+.dm-docfoot a:hover { color: var(--fg); }
+.dm-docfoot span { margin-left: auto; }
+.dm-docs-sitefoot { position: relative; z-index: 1; }
+.dm-docs-sitefoot .dm-foot { padding-bottom: 40px; }
+
+/* The TOC column scrolls with the page instead of being fixed, so the site
+   footer below can span the full width next to the left sidebar. */
+@media (min-width: 72rem) {
+  .right-sidebar-container .right-sidebar { position: sticky; top: var(--sl-nav-height); height: calc(100vh - var(--sl-nav-height)); padding-top: 0; }
+}
+
+/* sidebar scrollbar: thin, in the theme colours, visible on hover */
+#starlight__sidebar, .right-sidebar { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+#starlight__sidebar:hover, #starlight__sidebar:focus-within, .right-sidebar:hover { scrollbar-color: var(--border2) transparent; }
+#starlight__sidebar::-webkit-scrollbar, .right-sidebar::-webkit-scrollbar { width: 8px; }
+#starlight__sidebar::-webkit-scrollbar-thumb, .right-sidebar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+#starlight__sidebar:hover::-webkit-scrollbar-thumb, .right-sidebar:hover::-webkit-scrollbar-thumb { background: var(--border2); }
+
+.dm-docs-mobnav { display: flex; flex-wrap: wrap; gap: 4px 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.dm-docs-mobnav a { color: var(--muted); padding: 8px 0; text-decoration: none; }
+
+/* Starlight's own sidebar toggle replaces our menu button on docs pages */
+@media (max-width: 49.99rem) {
+  .page > .header .dm-menubtn { display: none; }
+  .page > .header .dm-install, .page > .header a.dm-icon { display: none; }
+  :root[data-has-sidebar] .page > .header { padding-inline-end: calc(var(--sl-menu-button-size) + 10px) !important; }
+}
+
+.sl-menu-button.sl-menu-button, :root[data-theme='light'] .sl-menu-button.sl-menu-button { border: 1px solid var(--border); background: var(--bg); box-shadow: none; border-radius: 8px; color: var(--muted); padding: 0; align-items: center; justify-content: center; }
+.sl-menu-button.sl-menu-button:hover { color: var(--fg); border-color: var(--border2); }
+
+/* flat sidebar groups like the prototype: no guide line, no extra indent */
+.sidebar-content ul ul li { margin-inline-start: 0; border-inline-start: 0; padding-inline-start: 0; }
+.sidebar-content { padding: 22px 18px 40px 24px; }
+.dm-desc { font-size: 18.5px; color: var(--muted); margin: 10px 0 0; max-width: 46rem; line-height: 1.55; }
+.content-panel + .content-panel { border-top: 0; }
+.content-panel:first-child { padding-bottom: 0; }

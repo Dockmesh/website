@@ -1,0 +1,23 @@
+---
+import { COMPARE } from '../data/content';
+
+interface Props { landing?: boolean }
+const { landing = false } = Astro.props;
+const rows = landing ? COMPARE.filter((r) => r.landing) : COMPARE;
+---
+<div class="cmp-wrap" tabindex="0" role="region" aria-label="Feature comparison">
+  <table class="cmp">
+    <thead><tr><th scope="col">Feature</th><th scope="col" class="dm">Dockmesh</th><th scope="col">Portainer CE</th><th scope="col">Portainer Business</th><th scope="col">Dockge</th></tr></thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <th scope="row">{r.feature}</th>
+          <td class="dm">{r.dm}</td>
+          {[r.ce, r.be, r.dg].map((c) => (
+            <td>{c.kind === 'yes' ? <span class="y">✓ {c.note}</span> : c.kind === 'paid' ? <span class="pd">Paid tier</span> : <span class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></span>}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

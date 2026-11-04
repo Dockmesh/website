@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import ThemeInit from '../components/ThemeInit.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  current?: string;
+  /** Search result group; omit to keep the page out of the search index. */
+  searchKind?: 'Website' | 'Releases';
+  noindex?: boolean;
+}
+const { title, description, current, searchKind, noindex = false } = Astro.props;
+const fullTitle = title === 'Dockmesh' ? 'Dockmesh — every Docker host, one place' : `${title} · Dockmesh`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = new URL('/og.png', Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="color-scheme" content="dark light" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dockmesh" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {searchKind && <meta data-pagefind-filter="kind[content]" content={searchKind} />}
+    {searchKind && <meta data-pagefind-meta="section[content]" content={searchKind === 'Releases' ? 'Changelog' : 'Website'} />}
+    {searchKind && <meta data-pagefind-meta="title[content]" content={title} />}
+    <ThemeInit />
+  </head>
+  <body>
+    <a class="dm-skip" href="#content">Skip to content</a>
+    <SiteHeader current={current} />
+    <main id="content" tabindex="-1" data-pagefind-body={searchKind ? '' : undefined}>
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

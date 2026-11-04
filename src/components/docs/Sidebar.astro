@@ -1,0 +1,8 @@
+---
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+import { docsVersion } from '../../lib/version';
+
+const version = await docsVersion();
+---
+<p class="dm-docver">Docs for Dockmesh {version}</p>
+<Default />

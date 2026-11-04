@@ -1,0 +1,18 @@
+---
+import Shot from './Shot.astro';
+import type { Feature } from '../data/content';
+
+interface Props { f: Feature; rev?: boolean }
+const { f, rev = false } = Astro.props;
+const problem = f.kicker.endsWith('?');
+---
+<div class:list={['feat', { rev }]}>
+  <div class="txt">
+    <p class={problem ? 'problem' : 'kicker'}>{f.kicker}</p>
+    <h3>{f.title}</h3>
+    <p>{f.text}</p>
+    <ul class="bullets">{f.bullets.map((b) => <li>{b}</li>)}</ul>
+    <p style="margin-top:18px"><a class="arrow-link" href={f.doc}>Read the docs<span class="sr-only">: {f.title}</span> <span aria-hidden="true">→</span></a></p>
+  </div>
+  <div><Shot k={f.shot} /></div>
+</div>

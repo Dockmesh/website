@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import { SHOTS, type ShotKey } from '../data/screenshots';
+
+interface Props { k: ShotKey; eager?: boolean; bare?: boolean; sizes?: string }
+const { k, eager = false, bare = false, sizes = '(max-width: 980px) 100vw, 680px' } = Astro.props;
+const s = SHOTS[k];
+const loading = eager ? 'eager' : 'lazy';
+---
+{bare ? (
+  <Fragment>
+    <Image class="shot-dark" src={s.dark} alt={s.alt} widths={[680, 1020, 1440]} sizes={sizes} loading={loading} format="webp" quality={80} />
+    <Image class="shot-light" src={s.light} alt={s.alt} widths={[680, 1020, 1440]} sizes={sizes} loading={loading} format="webp" quality={80} />
+  </Fragment>
+) : (
+  <figure class="frame zoomable" style="margin:0">
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>{s.url}</span></div>
+    <Image class="shot-dark" src={s.dark} alt={s.alt} widths={[680, 1020, 1440]} sizes={sizes} loading={loading} format="webp" quality={80} />
+    <Image class="shot-light" src={s.light} alt={s.alt} widths={[680, 1020, 1440]} sizes={sizes} loading={loading} format="webp" quality={80} />
+    <button type="button" class="zoom" data-zoom aria-label={`Enlarge screenshot: ${s.alt}`}></button>
+  </figure>
+)}

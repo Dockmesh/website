@@ -1,0 +1,12 @@
+---
+import raw from '../assets/dockmesh-mark.svg?raw';
+
+interface Props { uid: string }
+const { uid } = Astro.props;
+// Each inline copy needs its own mask ids, or a hidden copy breaks the visible one.
+const svg = raw
+  .replace(/id="(dm\w+)"/g, `id="$1-${uid}"`)
+  .replace(/url\(#(dm\w+)\)/g, `url(#$1-${uid})`)
+  .replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 675 275">', '<svg class="mark" viewBox="0 0 675 275" aria-hidden="true" focusable="false">');
+---
+<Fragment set:html={svg} />

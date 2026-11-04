@@ -1,0 +1,12 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+import nav from '../../data/docs-nav.json';
+
+const { entry } = Astro.locals.starlightRoute;
+const path = entry.id.replace(/^docs\//, '') + '.md';
+const section = nav.sections.find((s) => s.items.some((it) => it.path === path))?.title ?? 'Docs';
+---
+<Default />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta data-pagefind-filter="kind[content]" content="Docs" />
+<meta data-pagefind-meta={`section[content]`} content={section} />

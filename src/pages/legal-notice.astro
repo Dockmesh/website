@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { OWNER } from '../data/legal';
+---
+<Base title="Legal notice" description="Legal notice (Impressum) for dockmesh.dev under § 25 of the Austrian Media Act.">
+  <PageHero kicker="Legal" title="Legal notice" />
+  <section class="sec"><div class="dm-wrap prose-dm">
+    <p>Disclosure under § 25 of the Austrian Media Act (Mediengesetz) for a small, non-commercial website.</p>
+    <h2>Owner and publisher</h2>
+    <p>{OWNER.name}<br />{OWNER.town}, Austria</p>
+    <h2>Contact</h2>
+    <p>Email: <a href={`mailto:${OWNER.email}`}>{OWNER.email}</a></p>
+    <h2>Purpose</h2>
+    <p>A private, non-commercial open-source project: development and documentation of the free software Dockmesh. The website informs about the software, its features, documentation and releases.</p>
+    <h2>External links</h2>
+    <p>This site links to external sites, mainly GitHub. Their operators are responsible for their content.</p>
+  </div></section>
+</Base>

@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { OWNER } from '../data/legal';
+---
+<Base title="Privacy policy" description="What dockmesh.dev processes when you visit it: no cookies, no analytics, hosting by Cloudflare.">
+  <PageHero kicker="Legal" title="Privacy policy" />
+  <section class="sec"><div class="dm-wrap prose-dm">
+    <h2>Who is responsible</h2>
+    <p>{OWNER.name}, {OWNER.town}, Austria · <a href={`mailto:${OWNER.email}`}>{OWNER.email}</a></p>
+    <h2>In short</h2>
+    <p>This website sets no cookies, uses no analytics or tracking and loads nothing from third parties. Fonts and scripts are served from this site. Your theme choice and recent searches are kept in your browser's local storage and never leave it.</p>
+    <h2>Hosting</h2>
+    <p>The website is delivered by Cloudflare, Inc. (Cloudflare Workers), which processes data on our behalf as a processor. To deliver pages and protect against attacks, Cloudflare processes technically necessary data such as IP address, time and requested address. The legal basis is the legitimate interest in a secure, working site (Art. 6(1)(f) GDPR). Cloudflare is certified under the EU-US Data Privacy Framework.</p>
+    <p>We have not turned on request logging for this site (no Workers Logs, no Logpush), so we keep no access logs of our own. Cloudflare keeps request data only as long as it needs it to deliver the site, keep it secure and show us traffic statistics; it does not publish a fixed period. See <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</p>
+    <h2>Install script</h2>
+    <p>The install script at get.dockmesh.dev is also delivered by Cloudflare and downloads the software from GitHub. The hosting section applies; for the download, GitHub's privacy statement applies.</p>
+    <h2>Email</h2>
+    <p>Email to dockmesh.dev addresses is received and stored by Proton AG, Geneva, Switzerland (Proton Mail). We use your message and address only to answer you and delete them once they are no longer needed. The legal basis is the legitimate interest in answering inquiries (Art. 6(1)(f) GDPR). Switzerland has an EU adequacy decision.</p>
+    <h2>External links</h2>
+    <p>Links to GitHub open pages of GitHub, Inc.; their privacy statement applies there.</p>
+    <h2>Your rights</h2>
+    <p>You have the right to access, rectification, erasure, restriction, data portability and objection. You can lodge a complaint with the Austrian Data Protection Authority (Datenschutzbehörde).</p>
+  </div></section>
+</Base>

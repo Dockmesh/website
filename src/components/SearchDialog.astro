@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+---
+<dialog class="dm-search" id="dm-search" aria-label="Search">
+  <div class="sin">
+    <Icon name="search" size={18} />
+    <input id="dm-sq" type="search" placeholder="Search the docs, features and releases" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="dm-sres" aria-autocomplete="list" aria-label="Search" />
+    <kbd class="dm-kbd">Esc</kbd>
+  </div>
+  <div class="sfilters" role="group" aria-label="Filter results">
+    <button type="button" class="dm-chip" data-kind="" aria-pressed="true">All</button>
+    <button type="button" class="dm-chip" data-kind="Docs" aria-pressed="false">Docs</button>
+    <button type="button" class="dm-chip" data-kind="Releases" aria-pressed="false">Releases</button>
+    <button type="button" class="dm-chip" data-kind="Website" aria-pressed="false">Website</button>
+  </div>
+  <div class="sres" id="dm-sres" role="listbox" aria-label="Results"></div>
+  <div class="sfoot" aria-hidden="true"><span><kbd class="dm-kbd">↑</kbd> <kbd class="dm-kbd">↓</kbd> to move</span><span><kbd class="dm-kbd">↵</kbd> to open</span><span><kbd class="dm-kbd">Esc</kbd> to close</span></div>
+</dialog>
+<script>
+  import '../scripts/search';
+</script>

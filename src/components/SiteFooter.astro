@@ -1,0 +1,19 @@
+---
+import Logo from './Logo.astro';
+import { LINKS } from '../data/site';
+import { getReleases } from '../lib/changelog';
+
+const [latest] = await getReleases();
+---
+<footer class="dm-foot">
+  <div class="dm-wrap cols">
+    <div>
+      <a class="dm-brand" href="/" aria-label="Dockmesh home"><Logo uid="f" /><b>dock<span>mesh</span></b></a>
+      <p>Free and open-source management for Docker hosts and compose stacks. AGPL-3.0, every feature included.</p>
+      <p class="ver">Latest release <a href={`/changelog/${latest.version}/`}>v{latest.version}</a> · AGPL-3.0-only</p>
+    </div>
+    <div><h2>Product</h2><a href="/features/">Features</a><a href="/compare/">Compare</a><a href="/changelog/">Changelog</a><a href={LINKS.github}>Source code</a></div>
+    <div><h2>Docs &amp; help</h2><a href="/docs/">Documentation</a><a href={LINKS.install}>Installation</a><a href={LINKS.discussions}>Ideas &amp; questions</a><a href={LINKS.issues}>Report a bug</a></div>
+    <div><h2>Project</h2><a href="/about/">About &amp; FAQ</a><a href={LINKS.security}>Security</a><a href="/legal-notice/">Legal notice</a><a href="/privacy/">Privacy</a></div>
+  </div>
+</footer>

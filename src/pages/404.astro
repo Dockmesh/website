@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+---
+<Base title="Page not found" description="This page does not exist." noindex>
+  <PageHero kicker="404" title="Page not found." lede="The address may have changed with the new docs.">
+    <div class="cta-row"><button type="button" class="dm-btn pri" data-dm-search>Search the site</button><a class="dm-btn" href="/docs/">Open the docs</a></div>
+  </PageHero>
+</Base>

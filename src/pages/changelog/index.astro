@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getReleases, type Release } from '../../lib/changelog';
+import { LINKS } from '../../data/site';
+
+const releases = await getReleases();
+const counts = (r: Release) => r.sections.filter((s) => s.title !== 'Highlights').map((s) => `${s.items.length} ${s.title.toLowerCase()}`).join(' · ');
+---
+<Base title="Changelog" description="Release notes for every Dockmesh version, with security releases marked." current="changelog" searchKind="Releases">
+  <PageHero kicker="Changelog" title="What changed, release by release." lede="Security releases are marked; update to those as soon as you can." />
+  <section class="sec" style="padding-top:20px"><div class="dm-wrap">
+    {releases.map((r) => (
+      <div class="rel">
+        <div>
+          <h2><a href={`/changelog/${r.version}/`}>{r.version}</a>{r.severity !== 'normal' && <span class:list={['badge', r.severity]}>{r.severity}</span>}</h2>
+          <div class="dm-mono" style="font-size:13px;margin-top:6px;color:var(--subtle)"><time datetime={r.date}>{r.date}</time></div>
+        </div>
+        <div>
+          <p style="margin:0 0 10px">{r.summary}</p>
+          <p style="margin:0;font-size:14.5px;color:var(--subtle)">{counts(r)} — <a href={`/changelog/${r.version}/`}>Read the notes<span class="sr-only"> for {r.version}</span></a></p>
+        </div>
+      </div>
+    ))}
+    <p style="margin-top:22px;font-size:14.5px;color:var(--subtle)">Releases up to v0.3.3 are on the <a href={LINKS.releases}>GitHub releases page</a>.</p>
+  </div></section>
+</Base>

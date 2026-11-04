@@ -1,0 +1,8 @@
+---
+import { NAV, LINKS } from '../../data/site';
+---
+<nav class="dm-docs-mobnav" aria-label="Site">
+  {NAV.filter((n) => n.key !== 'docs').map((n) => <a href={n.href}>{n.label}</a>)}
+  <a href="/about/">About &amp; FAQ</a>
+  <a href={LINKS.github}>GitHub</a>
+</nav>

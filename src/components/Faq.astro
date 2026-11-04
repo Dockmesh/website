@@ -1,0 +1,9 @@
+---
+import { FAQ } from '../data/content';
+
+interface Props { limit?: number }
+const { limit } = Astro.props;
+---
+{FAQ.slice(0, limit).map(([q, a]) => (
+  <details class="q"><summary>{q}</summary><p set:html={a} /></details>
+))}

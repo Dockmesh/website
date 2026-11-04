@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FeatureRow from '../components/FeatureRow.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { FEATURES_PAGE, SECURITY_ITEMS, OTHER_ITEMS } from '../data/content';
+---
+<Base title="Features" description="Everything Dockmesh does: multi-host fleet, compose stacks on disk, verified backups, Caddy reverse proxy, roles, SSO, audit log, alerts and more." current="features" searchKind="Website">
+  <PageHero kicker="Features" title="Every feature ships in the free binary." lede="No tiers, no feature gates, no trial. What follows is what you install." />
+  <section class="sec"><div class="dm-wrap">
+    {FEATURES_PAGE.map((f, i) => <FeatureRow f={f} rev={i % 2 === 1} />)}
+  </div></section>
+  <section class="sec band"><div class="dm-wrap">
+    <div class="sechead"><h2>Security and access</h2><p class="lede">Built for more than one admin from the start.</p></div>
+    <div class="more" style="margin-top:0">{SECURITY_ITEMS.map(([b, s, h]) => <div><b><a href={h}>{b}</a></b><span>{s}</span></div>)}</div>
+  </div></section>
+  <section class="sec"><div class="dm-wrap">
+    <div class="sechead"><h2>Everything else</h2></div>
+    <div class="more" style="margin-top:0">{OTHER_ITEMS.map(([b, s, h]) => <div><b><a href={h}>{b}</a></b><span>{s}</span></div>)}</div>
+  </div></section>
+  <ClosingCta />
+</Base>

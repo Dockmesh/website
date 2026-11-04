@@ -1,0 +1,82 @@
+---
+import '../styles/appdemo.css';
+import raw from '../assets/dockmesh-mark.svg?raw';
+import Shot from './Shot.astro';
+import { DEMO } from '../data/demo';
+import { SCENES, sidebar } from '../scripts/demo-view';
+import type { ShotKey } from '../data/screenshots';
+
+const stills: ShotKey[] = ['heroUpdates', 'heroBackup', 'heroPublish'];
+const stillSizes = '(max-width: 1160px) 100vw, 1112px';
+const logo = raw
+  .replace(/id="(dm\w+)"/g, 'id="$1-app"')
+  .replace(/url\(#(dm\w+)\)/g, 'url(#$1-app)')
+  .replace('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 675 275">', '<svg viewBox="0 0 675 275" width="66" height="27" aria-hidden="true" focusable="false">');
+const side = sidebar(logo).replace('class="a-item" data-nav="updates"', 'class="a-item on" data-nav="updates"');
+const first = SCENES[0].frame(0).html;
+---
+<div class="demo-wrap" id="demowrap">
+  <div class="demo-tabs">
+    <div role="tablist" aria-label="Product demo" class="demo-tablist">
+      {SCENES.map((s, i) => (
+        <button type="button" role="tab" id={`demo-tab-${i}`} aria-controls="demo-panel" aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-scene={i}>
+          <span>{s.label}</span><i aria-hidden="true"></i>
+        </button>
+      ))}
+    </div>
+    <button type="button" class="demo-pause" data-demopause aria-pressed="false" aria-label="Pause the demo">
+      <svg class="i-pause" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="2.6" height="9" rx=".6" fill="currentColor"/><rect x="7.4" y="1.5" width="2.6" height="9" rx=".6" fill="currentColor"/></svg>
+      <svg class="i-play" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <div class="demo frame" id="demo-panel" role="tabpanel" aria-labelledby="demo-tab-0">
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span id="demourl">{DEMO.host}{SCENES[0].path}</span></div>
+    <div class="demo-vp" id="demovp">
+      <div class="appc" id="appc" aria-hidden="true">
+        <Fragment set:html={side} />
+        <div class="a-main" id="dstage" set:html={first}></div>
+        <svg class="a-cur" id="cursor" width="18" height="18" viewBox="0 0 24 24"><i></i><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+      </div>
+      <div class="demo-stills">
+        {stills.map((k, i) => (
+          <figure data-still={i} hidden={i !== 0}><Shot k={k} bare sizes={stillSizes} /></figure>
+        ))}
+      </div>
+    </div>
+    <p class="sr-only" id="demo-desc">{SCENES[0].summary}</p>
+  </div>
+</div>
+
+<noscript><style>.appc, .demo-tabs { display: none; } .demo-stills { display: block; }</style></noscript>
+
+<style is:global>
+  .demo-wrap { margin-top: 44px; }
+  .demo-tabs { display: flex; gap: 4px; align-items: center; margin-bottom: 10px; }
+  .demo-tablist { display: flex; gap: 4px; }
+  .demo-tabs [data-scene] { position: relative; border: 1px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 8px; padding: 6px 14px; font: 600 13.5px var(--font-ui); cursor: pointer; overflow: hidden; }
+  .demo-tabs [data-scene][aria-selected="true"] { color: var(--fg); border-color: var(--border2); }
+  .demo-tabs [data-scene] i { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--accent); width: 0; }
+  .demo-pause { margin-left: auto; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 8px; cursor: pointer; }
+  .demo-pause:hover { color: var(--fg); }
+  .demo-pause .i-play, .demo-pause[aria-pressed="true"] .i-pause { display: none; }
+  .demo-pause[aria-pressed="true"] .i-play { display: block; }
+  .demo { position: relative; }
+  .demo-vp { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bg); }
+  .demo-stills { display: none; }
+  .demo-stills figure { margin: 0; }
+  .demo-stills [hidden] { display: none; }
+  .appc:not(.ready) { visibility: hidden; }
+  .appc.paused *, .appc.paused *::before { animation-play-state: paused !important; }
+  @media (max-width: 600px) { .demo-tabs [data-scene] { padding: 6px 11px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .appc { display: none; }
+    .demo-stills { display: block; }
+    .demo-pause { display: none; }
+  }
+</style>
+
+<script>
+  import { DEMO } from '../data/demo';
+  import { initDemo } from '../scripts/demo';
+  initDemo(DEMO.host);
+</script>

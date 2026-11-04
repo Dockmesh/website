@@ -1,0 +1,21 @@
+---
+import Pagination from '@astrojs/starlight/components/Pagination.astro';
+import LastUpdated from '@astrojs/starlight/components/LastUpdated.astro';
+import { LINKS } from '../../data/site';
+import { docsVersion } from '../../lib/version';
+
+const version = await docsVersion();
+
+const { entry } = Astro.locals.starlightRoute;
+const rel = entry.id.replace(/^docs\//, '') + '.md';
+const edit = `${LINKS.github}/edit/main/docs/site/${rel}`;
+---
+<footer class="dm-docfoot-wrap">
+  <Pagination />
+  <div class="dm-docfoot">
+    <a href={edit}>Edit this page on GitHub</a>
+    <a href={LINKS.discussions}>Ask a question</a>
+    <span>Docs for Dockmesh {version}</span>
+  </div>
+  <div class="dm-lastupdated"><LastUpdated /></div>
+</footer>

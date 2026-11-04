@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "dockmesh-get",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-20",
+  "routes": [
+    { "pattern": "get.dockmesh.dev/*", "zone_name": "dockmesh.dev" }
+  ]
+}

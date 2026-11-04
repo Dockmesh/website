@@ -1,0 +1,63 @@
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+
+:root {
+  --font-ui: "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-code: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --w: 1160px;
+  --nav-h: 60px;
+
+  --bg: #020617;
+  --bg2: #050c1c;
+  --surface: #0b1426;
+  --field: #16213a;
+  --band: #081122;
+  --border: #1b2740;
+  --border2: #26334f;
+  --fg: #f1f5f9;
+  --muted: #a3b1c6;
+  --subtle: #8293ab;
+  --accent: #22d3ee;
+  --accent2: #67e8f9;
+  --on-accent: #03161b;
+  --accent-soft: rgba(34, 211, 238, 0.12);
+  --ok: #4ade80;
+  --ok-text: #4ade80;
+  --warn-text: #facc15;
+  --accent-text: #22d3ee;
+  --warn: #facc15;
+  --bad: #f87171;
+  --code: #0a1224;
+  --mark: rgba(250, 204, 21, 0.28);
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --overlay: rgba(2, 6, 23, 0.6);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f9fc;
+  --bg2: #eef2f7;
+  --surface: #fff;
+  --field: #eaeef4;
+  --band: #f1f4f8;
+  --border: #dfe5ee;
+  --border2: #cfd8e4;
+  --fg: #0b1424;
+  --muted: #47566b;
+  --subtle: #56657a;
+  --accent: #0e7490;
+  --accent2: #0e7490;
+  --on-accent: #fff;
+  --accent-soft: rgba(14, 116, 144, 0.07);
+  --ok: #15803d;
+  --ok-text: #166534;
+  --warn-text: #854d0e;
+  --accent-text: #0b5f75;
+  --warn: #a16207;
+  --bad: #b91c1c;
+  --code: #f1f4f8;
+  --mark: rgba(250, 204, 21, 0.45);
+  --shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+  --overlay: rgba(15, 23, 42, 0.35);
+  color-scheme: light;
+}

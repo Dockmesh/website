@@ -1,0 +1,14 @@
+---
+import { Code } from 'astro:components';
+import { langLabel } from '../lib/rehype-code-header.mjs';
+
+interface Props { code: string; lang?: string; class?: string; copy?: string }
+const { code, lang = 'bash', class: cls, copy } = Astro.props;
+---
+<div class:list={['dm-code', cls]}>
+  <div class="dm-code-head">
+    <span class="dm-code-lang">{langLabel(lang)}</span>
+    <button type="button" class="dm-copy" data-copy={copy ?? code} aria-label="Copy code">Copy</button>
+  </div>
+  <Code code={code} lang={lang as any} themes={{ light: 'github-light-default', dark: 'github-dark-default' }} defaultColor={false} />
+</div>

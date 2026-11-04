@@ -1,0 +1,10 @@
+---
+---
+<script is:inline>
+  (() => {
+    let t = null;
+    try { t = localStorage.getItem('starlight-theme'); } catch {}
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
