@@ -94,15 +94,20 @@ jobs:
           git commit -q -m "docs: sync for $TAG"
           git push -f origin "$branch"
 
-          num=$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')
+          sha=$(git rev-parse HEAD)
+          title="docs: sync for $TAG"
+
+          # --head matches fork branches of the same name too; only reuse a PR this workflow opened
+          num=$(gh pr list --base main --head "$branch" --state open --json number,title,author,isCrossRepository |
+            jq -r --arg t "$title" '[.[] | select(.isCrossRepository == false and .author.login == "app/github-actions" and .title == $t)][0].number // empty')
           if [ -z "$num" ]; then
-            gh pr create --base main --head "$branch" --title "docs: sync for $TAG" --body-file "$RUNNER_TEMP/body.md"
-            num=$(gh pr view "$branch" --json number --jq .number)
+            url=$(gh pr create --base main --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/body.md")
+            num=${url##*/}
           fi
 
           # mergeability is computed asynchronously right after the PR is opened
           for i in 1 2 3 4 5 6; do
-            if gh pr merge "$num" --squash --subject "docs: sync for $TAG (#$num)" --body-file "$RUNNER_TEMP/body.md"; then
+            if gh pr merge "$num" --squash --match-head-commit "$sha" --subject "$title (#$num)" --body-file "$RUNNER_TEMP/body.md"; then
               exit 0
             fi
             sleep 10
