@@ -22,6 +22,8 @@ npm run preview    # serve dist/
   and copied here with `npm run sync-docs -- <git-ref | path-to-app-checkout>`, e.g. `npm run sync-docs -- v0.5.1`.
   The script replaces `src/content/docs/docs/`, rewrites relative `.md` links and writes the sidebar to
   `src/data/docs-nav.json`. Don't edit the copied pages here.
+- **Current version** is `src/data/release.json`, written by the release sync below; without it the newest
+  changelog entry is used.
 - **Changelog** pages are built from the app's
   [`CHANGELOG.md`](https://github.com/Dockmesh/dockmesh/blob/main/CHANGELOG.md), fetched at build time. The build
   fails if it can't be read; set `DOCKMESH_CHANGELOG=/path/to/CHANGELOG.md` to build offline.
@@ -33,6 +35,16 @@ npm run preview    # serve dist/
 
 Cloudflare Workers Builds builds and deploys the site on every push to `main` (`wrangler.jsonc`, assets from
 `dist/`).
+
+## Release sync
+
+When a Dockmesh release is published, the app's release workflow triggers `.github/workflows/release-sync.yml`
+here. It syncs the docs from the release tag, writes `src/data/release.json`, builds the site and squash-merges a
+`docs: sync for vX.Y.Z` PR, which deploys like any other push to `main`. To run it again by hand:
+
+```bash
+gh workflow run release-sync.yml -R Dockmesh/website -f tag=vX.Y.Z
+```
 
 ## get.dockmesh.dev
 
