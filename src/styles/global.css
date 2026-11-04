@@ -143,6 +143,7 @@
   .badge { display: inline-block; font: 600 11px var(--font-code); padding: 1px 7px; border-radius: 4px; border: 1px solid var(--border2); color: var(--subtle); margin-left: 8px; vertical-align: 3px; letter-spacing: 0; }
   .badge.security { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 50%, transparent); }
   .badge.recommended { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+  .badge.aud { margin: 0 8px 0 0; vertical-align: 1px; }
 
   /* long text (legal, release notes, about) */
   .prose-dm { max-width: 72ch; }

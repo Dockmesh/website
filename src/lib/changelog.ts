@@ -5,13 +5,19 @@ import { readFile } from 'node:fs/promises';
 const SOURCE = 'https://raw.githubusercontent.com/Dockmesh/dockmesh/main/CHANGELOG.md';
 
 export type Severity = 'security' | 'recommended' | 'normal';
+/** A changelog bullet; upgrade notes also carry their id and, unless they are for everyone, an audience label. */
+export interface Item {
+  text: string;
+  id?: string;
+  audience?: string;
+}
 export interface Release {
   version: string;
   date: string;
   severity: Severity;
   summary: string;
   minUpgrade?: string;
-  sections: { title: string; items: string[] }[];
+  sections: { title: string; items: Item[] }[];
 }
 
 async function load(): Promise<string> {
@@ -52,11 +58,25 @@ export function parseChangelog(src: string): Release[] {
         if (line.startsWith('- ')) items.push(line.slice(2).trim());
         else if (/^\s{2,}\S/.test(line) && items.length) items[items.length - 1] += ' ' + line.trim();
       }
-      return { title: title.trim(), items };
+      const t = title.trim();
+      return { title: t, items: items.map((it) => (t === 'Upgrade notes' ? upgradeNote(it) : { text: it })) };
     }).filter((s) => s.items.length);
     out.push({ version, date, severity: (sev as Severity) || 'normal', summary: summary || 'Maintenance release.', minUpgrade, sections });
   }
   return out;
+}
+
+// `**Admins:** text <!-- id -->` (no label when everyone has to act); releases up to 0.5.1 were
+// published as `[id, all|admins] text`.
+const NOTE = /^(?:\*\*([A-Za-z]+):\*\* )?(.+?)\s*<!--\s*([a-z0-9][a-z0-9-]*)\s*-->$/;
+const OLD_NOTE = /^\[([a-z0-9][a-z0-9-]*), (all|admins)\] (.+)$/;
+
+function upgradeNote(s: string): Item {
+  let m = s.match(OLD_NOTE);
+  if (m) return { id: m[1], audience: m[2] === 'admins' ? 'Admins' : undefined, text: m[3] };
+  m = s.match(NOTE);
+  if (m) return { id: m[3], audience: m[1], text: m[2] };
+  return { text: s };
 }
 
 let cached: Promise<Release[]> | undefined;
