@@ -19,7 +19,9 @@ const badge = r.severity !== 'normal' ? ` <span class="badge ${r.severity}">${r.
     {r.sections.map((s) => (
       <>
         <h2>{s.title}</h2>
-        <ul>{s.items.map((it) => <li set:html={inlineMd(it)} />)}</ul>
+        <ul>{s.items.map((it) => (
+          <li id={it.id && `upgrade-${it.id}`}>{it.audience && <span class="badge aud">{it.audience}</span>}<Fragment set:html={inlineMd(it.text)} /></li>
+        ))}</ul>
       </>
     ))}
     <p style="margin-top:30px"><a href="/changelog/">← All releases</a> · <a href={`${LINKS.releases}/tag/v${r.version}`}>On GitHub</a></p>
