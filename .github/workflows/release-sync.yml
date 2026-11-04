@@ -1,0 +1,111 @@
+# Syncs the docs from a Dockmesh release and lands them on main through a
+# squash-merged PR; Cloudflare Workers Builds deploys the merge like any other
+# push. The app's release workflow dispatches `app-release` with {"tag": ...}.
+name: release sync
+
+on:
+  repository_dispatch:
+    types: [app-release]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Dockmesh release tag (e.g. v0.5.1)
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: release-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      TAG: ${{ github.event.client_payload.tag || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: check tag
+        id: rel
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag \"$TAG\" is not vX.Y.Z"
+            exit 1
+          fi
+          if ! published=$(gh release view "$TAG" -R Dockmesh/dockmesh --json publishedAt --jq .publishedAt); then
+            echo "::error::$TAG is not a release of Dockmesh/dockmesh"
+            exit 1
+          fi
+          echo "date=${published%%T*}" >> "$GITHUB_OUTPUT"
+
+      # main, not the dispatching ref: a manual run from another branch must still sync main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      - name: sync docs
+        run: npm run sync-docs -- "$TAG"
+
+      - name: record release
+        env:
+          DATE: ${{ steps.rel.outputs.date }}
+        run: |
+          jq -n --arg version "${TAG#v}" --arg date "$DATE" --arg tag "$TAG" \
+            '{version: $version, date: $date, tag: $tag}' > src/data/release.json
+
+      - run: npm run build
+
+      - name: open and merge PR
+        run: |
+          git add -A src/content/docs/docs src/data
+          if git diff --cached --quiet; then
+            echo "main is already synced for $TAG"
+            exit 0
+          fi
+
+          pages=$(git diff --cached --name-only -- src/content/docs/docs | grep -c '\.md$' || true)
+          if [ "$pages" -gt 0 ]; then docs="- Docs from Dockmesh $TAG, $pages pages changed"; else docs="- No docs changes in $TAG"; fi
+          cat > "$RUNNER_TEMP/body.md" <<EOF
+          **What**
+          $docs
+          - The site shows $TAG as the current version and lists it in the changelog
+
+          **Why**
+          - Dockmesh $TAG was released
+
+          **Tested**
+          - Site build with the live changelog
+          EOF
+
+          branch="release-sync/$TAG"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$branch"
+          git commit -q -m "docs: sync for $TAG"
+          git push -f origin "$branch"
+
+          num=$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$num" ]; then
+            gh pr create --base main --head "$branch" --title "docs: sync for $TAG" --body-file "$RUNNER_TEMP/body.md"
+            num=$(gh pr view "$branch" --json number --jq .number)
+          fi
+
+          # mergeability is computed asynchronously right after the PR is opened
+          for i in 1 2 3 4 5 6; do
+            if gh pr merge "$num" --squash --subject "docs: sync for $TAG (#$num)" --body-file "$RUNNER_TEMP/body.md"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::could not merge #$num; merge it by hand"
+          exit 1
