@@ -1,7 +1,7 @@
 ---
 title: Networks
 description: List and inspect Docker networks, see which containers are attached, and create, remove or prune networks.
-lastUpdated: 2026-11-03T20:50:23Z
+lastUpdated: 2026-11-09T11:30:28Z
 ---
 
 The **Networks** tab on the **Resources** page lists the Docker networks on the host selected in the host switcher, or on every host with **All hosts**. Stacks create their own project networks on deploy (named `<stack>_<key>` unless the compose file sets a `name`), so you mostly use this tab to look things up. `/networks` redirects to this tab.
@@ -51,7 +51,7 @@ Dockmesh ignores the top-level `ipam` key in compose files (see [Compose fields 
 |---|---|
 | Delete (row, or **Delete network** on the detail page) | Removes the network. Docker refuses while containers are attached. Not offered for `bridge`, `host` and `none`. |
 | **Prune empty** | Removes all networks without attached containers. `bridge`, `host` and `none` are kept. |
-| **System cleanup…** | Prunes dangling images, unused volumes and unused networks together. |
+| **System cleanup…** | Prunes dangling images, unused anonymous volumes and unused networks together. |
 
 Deleting acts on the network's host. **Prune empty** and **System cleanup…** act on the selected host; under **All hosts** they run on every reachable host in view, one after the other. Each action needs the permission on the host it acts on. An agent that is older than the server refuses these actions until you update it from the **Hosts** page.
 

@@ -1,7 +1,7 @@
 ---
 title: Uninstall
 description: Remove the Dockmesh server with uninstall.sh, remove agents, and clean up what the script leaves behind.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T15:57:59Z
 ---
 
 `scripts/uninstall.sh` removes the server installation. It is attached to every GitHub release as `uninstall.sh` and served at `get.dockmesh.dev/uninstall`. It never stops or removes containers and never touches Docker itself. Stacks you deployed keep running after Dockmesh is gone.
@@ -65,7 +65,7 @@ sudo docker volume rm dockmesh-caddy-data dockmesh-caddy-config
 
 **Backups outside the data root.** Local backup targets elsewhere, for example under `/srv/backups`, and archives on remote targets are not touched.
 
-**Helper images.** Dockmesh pulls a `caddy` image for the proxy (by default `caddy:2.11.7` pinned by digest, or the Caddy version you switched to, or `DOCKMESH_PROXY_IMAGE`), `alpine:3.24` for volume backups and restores, `alpine:3.24` pinned by digest for the volume browser, `busybox:latest` for volume tar streams and `busybox:1.38` for moving bind-mount data of containers deployed by older versions. Agents pull `busybox:latest` on their hosts. Remove the images with `docker image rm` if nothing else uses them.
+**Helper images.** Dockmesh pulls a `caddy` image for the proxy (by default `caddy:2.11.7` pinned by digest, or the Caddy version you switched to, or `DOCKMESH_PROXY_IMAGE`), `alpine:3.24` pinned by digest for volume backups, restores and the volume browser, and `busybox:1.38` pinned by digest for volume tar streams and for moving bind-mount data of containers deployed by older versions. Agents pull the same pinned `busybox:1.38` on their hosts, and the pinned `alpine:3.24` to browse a volume they can't read directly. Remove the images with `docker image rm` if nothing else uses them.
 
 **Scanner.** `install.sh` installs `grype` into `/usr/local/bin`. Remove it with `sudo rm /usr/local/bin/grype` if you don't use it otherwise.
 

@@ -1,7 +1,7 @@
 ---
 title: Notifications
 description: Notification channels for external services, the in-app notification feed and Activity page, and notices.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T09:18:50Z
 ---
 
 Dockmesh has three separate ways of telling you something:
@@ -61,7 +61,7 @@ Entries come from these producers. Each entry only reaches users who hold the li
 | `alert.fire` | An alert rule fires | `alerts.history` on the host |
 | `backup.fail` | A backup run fails | `backups.view` on the job's host; `system.update` on everything for the system backup |
 | `backup.ok` | A backup run finishes with warnings (clean runs send nothing) | Same as `backup.fail` |
-| `cve.found` | A vulnerability scan finds critical or high findings | `images.view` on the server host |
+| `cve.found` | A vulnerability scan finds critical or high findings | `images.view` on the scanned host |
 | `image.update` | A running image on the server host has a newer version upstream | `images.view` on the server host |
 | `agent.offline` | An agent disconnects | `hosts.view` on that host |
 | `migration.complete`, `migration.failed` | A stack migration ends | `stacks.view` on the stack |
