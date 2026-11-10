@@ -1,7 +1,7 @@
 ---
 title: Single sign-on
 description: Sign users in through OIDC, OAuth2, SAML or LDAP providers, map groups to roles on scopes, and the security behaviour you need to plan for.
-lastUpdated: 2026-11-03T20:50:23Z
+lastUpdated: 2026-11-10T08:31:56Z
 ---
 
 Dockmesh supports four kinds of external identity providers for single sign-on (SSO). All of them are free and can be used side by side. Add them under **Settings → Authentication** in the **Identity providers** section with **Add provider** (needs Settings & audit: Manage on everything). Pick a kind and, where offered, a template. Enabled providers show up as buttons or forms on `/login`.
@@ -34,7 +34,11 @@ The **Callback URLs** box on the Authentication page and the provider dialog (**
 
 **OAuth2:** **Authorization URL**, **Token URL**, **Userinfo URL**, **Client ID**, **Client secret**, **Scopes**, **Subject field**, **Username field**, **Email field**, **Groups field** (all fields of the userinfo JSON). The subject field is the immutable user id the Dockmesh account is keyed by; leave it empty to use `sub`, or `id` when there is no `sub` (GitHub, GitLab and Gitea send `id`). Never use a login name or email there: those can be renamed and later taken by someone else. The provider must return an email address in the userinfo response. With GitHub that means the user needs a public email, or the sign-in fails.
 
-**SAML:** **IdP metadata XML** (paste the IdP's `<EntityDescriptor>`), **NameID format**, an optional **Subject attribute (optional)**, and the **Username attribute** (default `NameID`), **Email attribute** (default `email`) and **Groups attribute** (default `groups`). Dockmesh generates its own service-provider key and certificate and publishes them in the SP metadata; the SP entity ID is the SP metadata URL. The dialog also shows a **Metadata URL** tab and fields for an SP entity ID and signing and encryption certificates, but these values aren't saved: only pasted metadata XML is used.
+**SAML:** the IdP metadata, either as a **Metadata URL** or as pasted XML (the IdP's `<EntityDescriptor>`), **NameID format**, an optional **Subject attribute (optional)**, and the **Username attribute** (default `NameID`), **Email attribute** (default `email`) and **Groups attribute** (default `groups`). Dockmesh generates its own service-provider key and certificate and publishes them in the SP metadata; the SP entity ID is the SP metadata URL unless you set another.
+
+Dockmesh fetches a **Metadata URL** when you save and once a day, so a rotated IdP certificate is picked up by itself. The URL must use `https`; plain `http` is accepted only when a **Signing certificate** is set, because the metadata carries the keys that verify sign-ins. Loopback, link-local and cloud instance metadata addresses are refused, the fetch doesn't use `HTTP_PROXY`, and a certificate from a private CA has to be trusted by the server; in those cases paste the XML. If a refresh fails, the URL starts serving another IdP entity, or a plain `http` URL changes the sign-in endpoints, the stored metadata stays in use and the dialog shows the error until you save the provider.
+
+**Signing certificate** replaces the keys in the metadata for verifying SAML responses: only this certificate is accepted. **Encryption certificate and key** takes a certificate together with its unencrypted RSA private key, for an IdP that must encrypt assertions to your own key pair. The pair replaces the generated one in the SP metadata and is used to decrypt; the key is stored encrypted with the server's secrets key (unless `DOCKMESH_SECRETS_ENCRYPT_ENV=false`) and never returned by the API. Leave it empty otherwise: the generated pair already works for encrypted assertions.
 
 The account is keyed by the NameID, or by the subject attribute when one is set. The Azure AD template sets it to `http://schemas.microsoft.com/identity/claims/objectidentifier`. **NameID format** offers `persistent` (default), `unspecified` and `emailAddress`, and Dockmesh asks the IdP for that format. A persistent NameID or an attribute that never changes is the safe choice: an `emailAddress` NameID changes when the user's email does, and the account then no longer matches. An assertion must carry exactly one value of the subject attribute.
 
@@ -48,7 +52,7 @@ Client secrets and the LDAP bind password are stored encrypted when secrets encr
 
 Each provider has a **Group → role mappings** list (**SAML attribute → role mappings** for SAML). Every mapping gives members of a group a role on a scope (**Role applies on**: everything, a host, a host tag or a stack). A user in several mapped groups gets all of those assignments. With no matching group, the user gets the provider's **Default role** on everything.
 
-At every sign-in Dockmesh replaces the account's identity provider assignments with the ones its groups give now. Assignments you added by hand stay. To stop sign-ins from changing an account's access, use **Stop updating from groups** on the user's **Overview** tab under **Users & roles**.
+At every sign-in Dockmesh replaces the account's identity provider assignments with the ones its groups give now. Assignments you added by hand stay. To stop sign-ins from changing an account's access, use **Stop updating from groups** on the user's **Overview** tab under **Users & roles**. An account linked to a provider by verified email starts without this: it keeps its assignments and gets none from groups or the default role until you click **Update from groups at sign-in** there.
 
 The groups come from the **Group claim** (OIDC), the **Groups field** (OAuth2), the **Groups attribute** (SAML) or the **Group membership attribute** (LDAP). LDAP mappings match the full DN or only the group's CN, so `Admins` matches `cn=Admins,ou=groups,…`; the other kinds compare exactly.
 

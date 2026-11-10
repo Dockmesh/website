@@ -1,7 +1,7 @@
 ---
 title: Architecture
 description: The pieces that make up a Dockmesh installation, where each kind of state lives, and how a request or deploy travels through the system.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T11:08:56Z
 ---
 
 Dockmesh is one server binary, `dockmesh`. It serves the web UI and the REST API, talks to the Docker engine on its own machine, and accepts connections from agents on other machines. Two helpers are optional and run outside the binary: the Caddy reverse proxy (as a Docker container) and the Grype vulnerability scanner (as a subprocess).
@@ -17,7 +17,7 @@ Dockmesh is one server binary, `dockmesh`. It serves the web UI and the REST API
 | SQLite database | `modernc.org/sqlite`, file at `DOCKMESH_DB_PATH` (default `./data/dockmesh.db`) | The only supported database. |
 | Local Docker engine | Reached through the Docker SDK | Connection settings come from the standard Docker environment (`DOCKER_HOST` etc.), usually the local socket. Dockmesh never shells out to the `docker` CLI. |
 | `dockmesh-agent` | Small binary on each remote host | Dials out to the server over a mutual-TLS WebSocket and runs Docker operations locally on the server's behalf. See [Hosts and agents](/docs/concepts/hosts-and-agents/). |
-| Reverse proxy | Docker container `dockmesh-proxy` running a pinned, tested `caddy` image (or `DOCKMESH_PROXY_IMAGE`) | Only exists when the proxy is enabled (`DOCKMESH_PROXY_ENABLED=true` or the `proxy_enabled` setting). Dockmesh configures it over Caddy's admin API on `127.0.0.1:2019`. See [Reverse proxy](/docs/features/reverse-proxy/). |
+| Reverse proxy | Docker container `dockmesh-proxy` running a pinned, tested `caddy` image (or `DOCKMESH_PROXY_IMAGE`) | Only exists when the proxy is enabled (`DOCKMESH_PROXY_ENABLED=true` or the `proxy_enabled` setting). Dockmesh configures it over Caddy's admin API on a private Unix socket. See [Reverse proxy](/docs/features/reverse-proxy/). |
 | Vulnerability scanner | External `grype` binary, run as a subprocess | `scripts/install.sh` installs it unless `DOCKMESH_NO_SCANNER=1`. The Dockerfile in the repository does not include it. Binary path: `DOCKMESH_SCANNER_BINARY` (default `grype`). See [Vulnerability scanning](/docs/features/vulnerability-scanning/). |
 | `dmctl` | Command-line client | Talks to the same REST API with an API token or a username and password. See [dmctl](/docs/reference/dmctl/). |
 

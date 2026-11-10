@@ -1,7 +1,7 @@
 ---
 title: Installation
 description: Install the Dockmesh server with the installer script, by hand, from source, or as a locally built container.
-lastUpdated: 2026-11-04T10:01:51Z
+lastUpdated: 2026-11-10T10:03:29Z
 ---
 
 The recommended path is the installer script on a Linux host that already runs Docker. It installs the binaries, creates a service account and a systemd unit, starts the server and hands you over to a setup wizard in the browser.
@@ -69,7 +69,7 @@ curl -fsSL https://get.dockmesh.dev | sudo DOCKMESH_NO_SCANNER=1 bash
 
 | Variable | Default | Effect |
 |---|---|---|
-| `DOCKMESH_VERSION` | latest release | Release tag to install, e.g. `v0.5.1`. |
+| `DOCKMESH_VERSION` | latest release | Release tag to install, e.g. `v0.5.2`. |
 | `DOCKMESH_CHANNEL` | `stable` | `testing` also considers pre-releases when resolving "latest". |
 | `DOCKMESH_INSTALL_DIR` | `/usr/local/bin` | Where `dockmesh`, `dmctl` and `grype` go. |
 | `DOCKMESH_ASSET_DIR` | `<install dir>/../share/dockmesh` | Where the agent installer and agent binaries go. |
@@ -154,7 +154,7 @@ Because `init` creates the admin itself, the server starts without setup mode an
 Each release on [GitHub](https://github.com/dockmesh/dockmesh/releases) has `dockmesh_linux_amd64.tar.gz`, `dockmesh_linux_arm64.tar.gz`, `dockmesh_darwin_amd64.tar.gz`, `dockmesh_darwin_arm64.tar.gz` and a `checksums.txt`. Each archive contains `dockmesh`, `dmctl`, `install-agent.sh`, `LICENSE`, `README.md` and the agent: the Linux archives `dockmesh-agent-linux-amd64` and `dockmesh-agent-linux-arm64`, the macOS archives a single `dockmesh-agent`.
 
 ```bash
-VER=v0.5.1
+VER=v0.5.2
 ARCH=amd64   # or arm64
 curl -fLO https://github.com/dockmesh/dockmesh/releases/download/$VER/dockmesh_linux_$ARCH.tar.gz
 curl -fLO https://github.com/dockmesh/dockmesh/releases/download/$VER/checksums.txt

@@ -1,7 +1,7 @@
 ---
 title: Volumes
 description: List and inspect Docker volumes, browse their files read-only, and create, remove or prune them.
-lastUpdated: 2026-11-03T20:50:23Z
+lastUpdated: 2026-11-09T11:30:28Z
 ---
 
 The **Volumes** tab on the **Resources** page lists the Docker volumes on the host selected in the host switcher, or on every host with **All hosts**. Bind mounts are not volumes and do not appear here; you see them on the container page under **Mounts**.
@@ -56,12 +56,10 @@ The volume pages have no restore action. Restore a volume or stack backup from *
 | Action | Effect |
 |---|---|
 | Delete (row, detail page or several selected rows) | Force-removes the volume. Docker still refuses while a container uses it. The data is gone. |
-| **Prune orphan** | Calls Docker's volume prune for volumes no container uses. |
-| **System cleanup…** | Prunes dangling images, unused volumes and unused networks together. |
+| **Prune anonymous** | Removes anonymous volumes no container uses. Named volumes, also unused ones, and Dockmesh's own volumes are kept. The button shows how many would be removed. |
+| **System cleanup…** | Prunes dangling images, unused anonymous volumes and unused networks together. |
 
-What a prune removes is decided by Docker. On Docker Engine 23 and later, a prune without filters removes only unused **anonymous** volumes; named volumes stay. On older engines it removes every unused volume, named or not. Check your engine version (`docker version`) before you rely on either behaviour.
-
-Creating and deleting act on the volume's host. **Prune orphan** and **System cleanup…** act on the selected host; under **All hosts** they run on every reachable host in view, one after the other. An agent that is older than the server refuses these actions until you update it from the **Hosts** page.
+Creating and deleting act on the volume's host. **Prune anonymous** and **System cleanup…** act on the selected host; under **All hosts** they run on every reachable host in view, one after the other. An agent that is older than the server refuses these actions until you update it from the **Hosts** page.
 
 There is no undo. Take a backup of volumes whose data matters first; see [Backups](/docs/operations/backups/). Stack migration refuses stacks with named volumes; see [Migration and drain](/docs/features/migration-and-drain/).
 

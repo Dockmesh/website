@@ -1,7 +1,7 @@
 ---
 title: Backups and restore
 description: Back up volumes, stacks and the Dockmesh server itself to local disk, S3, SFTP, SMB or WebDAV, and restore them.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T09:39:13Z
 ---
 
 Dockmesh runs backup jobs on a cron schedule and writes each run as one gzipped tar archive to a backup target. Archives can be encrypted with the server's age key. Everything lives under **Backups** in the sidebar, which has three tabs: **Jobs**, **Runs** and **Targets**.
@@ -34,7 +34,7 @@ Every job runs on one host. The wizard picks it from the source:
 
 The wizard only offers hosts on which you may create (or, when editing, change) backup jobs. When a job is saved with a new host or source, the server checks that the host exists, that the volume exists on it, and that the stack is deployed there, and rejects the job otherwise.
 
-Volume backups use a short-lived helper container: `alpine:3.24` on the server's host, `busybox:latest` on agent hosts. Dockmesh pulls the image if it is missing. Archives of agent hosts stream through the server to the target.
+Volume backups use a short-lived helper container: `alpine:3.24` on the server's host, `busybox:1.38` on agent hosts, both pinned by digest. Dockmesh pulls the image if it is missing and stops with the registry's error if that fails. On a host without internet access, see [outbound connections](/docs/operations/hardening/). Archives of agent hosts stream through the server to the target.
 
 ## Targets
 

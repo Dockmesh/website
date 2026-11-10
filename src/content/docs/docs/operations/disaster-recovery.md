@@ -1,7 +1,7 @@
 ---
 title: Disaster recovery
 description: What to keep safe, how to export the age key, and how to rebuild a Dockmesh server from a system backup.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T15:57:59Z
 ---
 
 When the Dockmesh server goes down, containers keep running: on the local host Docker runs them without Dockmesh, and remote agents keep retrying the connection until a server is back. What you lose is the management layer and its state. This page covers what you need to bring that back. To restore a single stack or volume from a backup, see [Backups](/docs/operations/backups/#restore).
@@ -67,10 +67,10 @@ Like other subcommands, `restore` loads the first of `/var/lib/dockmesh/dockmesh
 ### 1. Install Dockmesh on the new machine
 
 ```bash
-curl -fsSL https://get.dockmesh.dev | sudo DOCKMESH_VERSION=v0.5.0 bash
+curl -fsSL https://get.dockmesh.dev | sudo DOCKMESH_VERSION=vX.Y.Z bash
 ```
 
-Use the version you ran before, or newer. To restore through the setup wizard, open the server's URL now and pick **Restore from a backup instead**; then continue with step 4 to carry over `dockmesh.env`, and with step 5.
+Replace `vX.Y.Z` with the version you ran before, or a newer one. To restore through the setup wizard, open the server's URL now and pick **Restore from a backup instead**; then continue with step 4 to carry over `dockmesh.env`, and with step 5.
 
 For the command line, stop the server and don't finish the setup wizard. If you already did, you need `--force` in step 3.
 

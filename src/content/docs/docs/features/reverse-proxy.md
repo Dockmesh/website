@@ -1,7 +1,7 @@
 ---
 title: Reverse proxy
 description: The optional Caddy container Dockmesh manages on the server host, how to turn it on, sites, site options, Caddyfile import, Caddy versions and certificates.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T11:08:56Z
 ---
 
 Dockmesh can run a Caddy reverse proxy for you. It isn't built into the binary: when the proxy is enabled, Dockmesh runs Caddy as a Docker container on the server host and configures it through Caddy's admin API. Caddy serves your sites over HTTPS with certificates it obtains itself (see [TLS modes](#tls-modes)). The proxy is off by default. If you already run Traefik, nginx or another proxy, keep it off.
@@ -15,7 +15,7 @@ Everything below happens on **Reverse proxy** in the sidebar, which has the tabs
 | Container name | `dockmesh-proxy` |
 | Image | `caddy:2.11.7`, pinned by digest (see [Caddy version](#caddy-version)) |
 | Network | host network, listens on `:80` and `:443` |
-| Admin API | `127.0.0.1:2019` on the host |
+| Admin API | Unix socket `<data dir>/caddy-admin/admin.sock`, reachable only by the Dockmesh user. The managed proxy needs Dockmesh installed directly on the host, not in a container |
 | Restart policy | `unless-stopped` |
 | Volumes | `dockmesh-caddy-data` (certificates), `dockmesh-caddy-config` (config) |
 | Labels | `dockmesh.managed=true`, `dockmesh.component=proxy` |

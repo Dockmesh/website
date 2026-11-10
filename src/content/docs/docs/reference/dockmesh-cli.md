@@ -1,7 +1,7 @@
 ---
 title: dockmesh and dockmesh-agent commands
 description: Every subcommand and flag of the dockmesh server binary and the dockmesh-agent binary.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-09T14:36:41Z
 ---
 
 The `dockmesh` binary is both the server and its admin tool. Run without arguments (or with `serve`) it starts the server; every other subcommand runs once on the server host and exits. These commands work directly on the database and data directory, so they need no API token. For remote, token-based work use [dmctl](/docs/reference/dmctl/).
@@ -191,7 +191,7 @@ To take over projects that are already running without restarting them, use `dmc
 dockmesh config show
 ```
 
-Prints the effective paths, URLs and toggles after environment and env-file loading, with the JWT secret redacted. It does not name the env file it loaded; compare `DBPath` with your data root to see whether the right `dockmesh.env` was picked up.
+Prints the env file it loaded (or `none`), then the effective paths, URLs and toggles after environment and env-file loading, with the JWT secret redacted.
 
 ## secrets rotate
 
