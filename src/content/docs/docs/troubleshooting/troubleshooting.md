@@ -1,7 +1,7 @@
 ---
 title: Troubleshooting
 description: Symptoms, causes and fixes for the problems Dockmesh admins run into most often.
-lastUpdated: 2026-11-09T14:36:41Z
+lastUpdated: 2026-11-10T14:18:45Z
 ---
 
 Each entry starts with the symptom as you see it, an error message or a behaviour, followed by the cause and the fix. Most fixes start with a log, so read the first section even if your problem is somewhere else.
@@ -133,9 +133,9 @@ Deploy errors come back as the response message and show up in the stack page. D
 
 ### "Stack files changed outside Dockmesh"
 
-**Cause:** `compose.yaml` or `.env` on disk differ from what Dockmesh last wrote, for example after editing them over SSH or a `git pull` in the stack directory. The deploy is refused with HTTP 409 and code `modified_outside` (`compose.yaml or .env changed outside Dockmesh; review the files and confirm the deploy`). Stack migrations are refused the same way.
+**Cause:** `compose.yaml`, `.env`, `.env.age`, `.dockmesh.meta.json` or a `compose.<env>.yaml` override file on disk differ from what Dockmesh last wrote, for example after editing them over SSH or a `git pull` in the stack directory. The deploy is refused with HTTP 409 and code `modified_outside` (`stack files changed outside Dockmesh; review the files and confirm the deploy`). Migrations, scaling, rolling updates and image updates of the stack's containers are refused the same way, and the auto-scaler pauses the stack.
 
-**Fix:** open the files in the stack editor and check the changes. If they are intended, click **Deploy anyway** in the dialog; that records the files as reviewed. API clients send the deploy again with `?confirm_external=1`.
+**Fix:** open the files and check the changes. If they are intended, click **Deploy anyway** in the dialog; that records the files as reviewed. API clients send the request again with `?confirm_external=1`.
 
 ### "port already in use on the target host — pick a different host port (see compose.yaml ports:) or stop whatever is bound to it"
 

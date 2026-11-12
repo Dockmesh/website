@@ -1,7 +1,7 @@
 ---
 title: Git sources
 description: Keep a stack's compose.yaml and .env in sync with a Git repository, by polling, on demand or through a push webhook.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-10T14:18:45Z
 ---
 
 A git source binds one stack to a branch of a Git repository. Dockmesh clones the repository, copies the compose file into the stack directory and, if you turn it on, deploys the stack whenever a new commit arrives.
@@ -42,7 +42,7 @@ The token, the SSH key and the webhook secret are encrypted with the server's se
 
 Because `.dockmesh.meta.json` and override files are never copied, a push to the repository can't change the stack's dependencies, scaling rules, migration hooks or default environment override.
 
-Before it copies anything into an existing stack, the sync checks whether `compose.yaml` or `.env` were changed outside Dockmesh. If they were, the sync stops with an error, users who may deploy the stack get a **Git deploy of &lt;stack&gt; is on hold** notice, and **Sync now** answers with a list of the changed files. Review the files and deploy the stack by hand to confirm them; syncs continue after that.
+Before it copies anything into an existing stack, the sync checks whether the stack files were changed outside Dockmesh. If they were, the sync stops with an error, users who may deploy the stack get a **Git deploy of &lt;stack&gt; is on hold** notice, and **Sync now** answers with a list of the changed files. Review the files and deploy the stack by hand to confirm them; syncs continue after that.
 
 The stack's **Settings** tab shows the repository, branch and path, whether it deploys automatically, whether the webhook is on, and the short commit SHA and time of the last sync. **Sync now** pulls at once (also **Sync from git now** in the action menu), **Edit** changes the settings and **Disconnect** removes the source. Disconnecting deletes the configuration and the local clone; the stack and its files stay.
 
