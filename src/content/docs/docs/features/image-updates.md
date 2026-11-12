@@ -1,7 +1,7 @@
 ---
 title: Image updates
 description: How Dockmesh detects newer images for containers on the server host, the Updates page, single and batch updates, and rollback.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-10T14:18:45Z
 ---
 
 Dockmesh checks whether the images of running containers on the server host have a newer version in their registry. You can update one container or several at once, follow each update live, and roll back to the previous image.
@@ -40,7 +40,7 @@ The update runs as an operation with these steps, shown live with its log in the
 
 The update keeps running if you close the page. It can be cancelled while it pulls; after that the swap isn't interrupted.
 
-**Stack containers.** A container of a Dockmesh stack is rebuilt from the stack's `compose.yaml`, together with the other replicas of its service, one at a time. If one replica fails, the ones already moved are put back on the old image. The new image is recorded in the stack's deploy history. Because this applies the stack's current `compose.yaml`, it also needs `stacks.deploy` on the stack.
+**Stack containers.** A container of a Dockmesh stack is rebuilt from the stack's `compose.yaml`, together with the other replicas of its service, one at a time. If one replica fails, the ones already moved are put back on the old image. The new image is recorded in the stack's deploy history. Because this applies the stack's current `compose.yaml`, it also needs `stacks.deploy` on the stack. When stack files were changed outside Dockmesh, the update is refused like a deploy (HTTP 409, code `modified_outside`) until the files are confirmed: review them and deploy the stack, or repeat the API request with `?confirm_external=1`.
 
 **Standalone containers** are recreated with their own configuration. Values the new image defines (environment, command, entrypoint, working directory, user, labels, healthcheck) come from the new image unless they were set on the container itself.
 

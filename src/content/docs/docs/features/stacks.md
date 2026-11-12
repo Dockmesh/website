@@ -1,7 +1,7 @@
 ---
 title: Stacks
 description: Create, edit, deploy, roll back, adopt and delete Compose stacks from the Dockmesh web UI.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-10T14:55:55Z
 ---
 
 This page covers the **Stacks** pages in the UI. How a stack is stored on disk and what a deploy does to your containers is explained in [Stacks (concepts)](/docs/concepts/stacks/); read that first if you are moving existing Compose projects over.
@@ -84,7 +84,9 @@ Variables are used for `${VAR}` substitution in `compose.yaml` at deploy time. H
 
 **Deploy** runs the stack on the host selected in the host switcher (with **All hosts** selected, on the host it is deployed on or was created for). Every deploy pulls missing images and recreates every container; the details are in [How a deploy reconciles](/docs/concepts/stacks/#how-a-deploy-reconciles).
 
-If `compose.yaml`, `.env` or `.env.age` changed since Dockmesh last wrote them, the deploy first asks **Stack files changed outside Dockmesh** and lists the files. **Deploy anyway** deploys them as they are and records them as reviewed.
+If `compose.yaml`, `.env`, `.env.age`, `.dockmesh.meta.json` or a `compose.<env>.yaml` override file changed since Dockmesh last wrote them, the deploy first asks **Stack files changed outside Dockmesh** and lists the files. **Deploy anyway** deploys them as they are and records them as reviewed.
+
+When the stack has a default environment override (Environment tab), the deploy first asks **Deploy with the &lt;env&gt; override?** and names the `compose.<env>.yaml` file it merges over `compose.yaml`. This also applies to **Deploy** in the stack list.
 
 On the server's host the header shows live progress: pulling, creating, starting, healthcheck, then `deploy ok` or `deploy failed`. Deploys on agent hosts show no phases. A deploy on an agent may take up to 15 minutes, image pulls included.
 

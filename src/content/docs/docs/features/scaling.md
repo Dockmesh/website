@@ -1,7 +1,7 @@
 ---
 title: Scaling
 description: Run several containers for one service, replace them one at a time with a rolling update, and what auto-scaling rules do.
-lastUpdated: 2026-11-03T09:41:58Z
+lastUpdated: 2026-11-10T14:55:55Z
 ---
 
 Dockmesh can run more than one container for a service of a stack and replace them one by one. This is container-level scaling on one host. There is no load balancer; containers of a scaled service share the service name as a network alias, so other containers on the same network reach them through Docker's DNS.
@@ -27,6 +27,7 @@ Things to know:
 - The replica count is not saved anywhere. A stack **Deploy** only recreates replica 1; the other replicas keep running with their previous configuration until you scale again. Scale down to 1 before a deploy that changes the service, then scale up again.
 - `deploy.replicas` in `compose.yaml` is ignored.
 - Scaling up waits for each new replica to pass its health check (or, without one, to keep running for a short grace period) before it creates the next one, as a deploy does.
+- When stack files changed outside Dockmesh, **Scale…** and **Rolling update…** first ask **Stack files changed outside Dockmesh** and list the files, like a deploy.
 - Scaling and rolling updates are refused while the stack's containers still bind-mount a temporary staging directory from an earlier version. Deploy the stack once to move that data into the stack directory.
 
 ## Rolling updates
@@ -65,7 +66,7 @@ curl -X PUT -H "Authorization: Bearer $DOCKMESH_TOKEN" \
   }'
 ```
 
-`GET` returns the rules and `DELETE` removes them, on the same path. The rules are stored in the stack's `.dockmesh.meta.json`. Every 30 seconds Dockmesh averages the service's usage over the last minute, compares it with the thresholds and, once a threshold has been crossed for `duration_seconds`, adds or removes one replica, then waits for the cooldown. A manual scale does not pause or update the auto-scaler; it may scale the service again on its next evaluation.
+`GET` returns the rules and `DELETE` removes them, on the same path. The rules are stored in the stack's `.dockmesh.meta.json`, and the rules and their values are checked when they are saved and again every time the auto-scaler reads them. Every 30 seconds Dockmesh averages the service's usage over the last minute, compares it with the thresholds and, once a threshold has been crossed for `duration_seconds`, adds or removes one replica, then waits for the cooldown. A manual scale does not pause or update the auto-scaler; it may scale the service again on its next evaluation.
 
 `cpu_unit` sets what a CPU threshold means:
 
@@ -75,6 +76,14 @@ curl -X PUT -H "Authorization: Bearer $DOCKMESH_TOKEN" \
 | `core` | Percent of one core, 100 per busy core, as `docker stats` shows it. Rules stored before v0.5.0 have this unit and keep behaving as before. |
 
 `GET` shows the unit of every rule. Memory thresholds are a percentage of the container's memory limit.
+
+The auto-scaler builds new replicas from the files on disk with nobody there to review them, so it pauses a stack while:
+
+- a stack file (`compose.yaml`, `.env`, `.dockmesh.meta.json` or a `compose.<env>.yaml` override) was changed outside Dockmesh,
+- the stack's default environment override was never confirmed by a manual deploy, or
+- the stored rules are invalid.
+
+Users who may deploy the stack get an **Auto-scaling of &lt;stack&gt; is paused** notice that says why, and the stack page shows the same as a banner. Review the files and deploy the stack once (or save the rules again when they are invalid); auto-scaling resumes on its next evaluation.
 
 Before you rely on it, note the limits:
 
@@ -93,4 +102,4 @@ Before you rely on it, note the limits:
 | `POST /api/v1/stacks/{name}/services/{service}/rolling-update` | Rolling update (`parallelism`, `delay_seconds`, `order`, `failure_action`) |
 | `GET`, `PUT`, `DELETE /api/v1/stacks/{name}/scaling-rules` | Auto-scaling rules |
 
-All of them need `stacks.deploy`. Scale and rolling-update requests take `?host=` for the host the stack runs on. Scaling a database-like image beyond 1 without `"force": true` answers `409` with `force_needed`. See [REST API](/docs/reference/api/).
+All of them need `stacks.deploy`. Scale and rolling-update requests take `?host=` for the host the stack runs on. Scaling a database-like image beyond 1 without `"force": true` answers `409` with `force_needed`. Like a deploy, scale and rolling-update requests answer `409` with code `modified_outside` and the changed `files` when stack files changed outside Dockmesh; repeat the request with `?confirm_external=1` after reviewing them. See [REST API](/docs/reference/api/).
