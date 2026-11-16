@@ -12,7 +12,8 @@
     "astro": "astro",
     "deploy": "astro build && wrangler deploy",
     "cf:preview": "astro build && wrangler dev",
-    "sync-docs": "node scripts/sync-docs.mjs"
+    "sync-docs": "node scripts/sync-docs.mjs",
+    "test": "node --test scripts/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.5",
