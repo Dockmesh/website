@@ -29,36 +29,37 @@ test('mergeChangelog', () => {
     {
       name: 'release from main',
       tag: 'tag-v0.6.0.md', version: '0.6.0', previous: 'site-0.5.3.md',
-      want: ['0.6.0', '0.5.4', '0.5.3'],
+      want: ['0.6.0', '0.5.4', '0.5.3'], kept: [],
     },
     {
       // main had no 0.5.4 yet; the tag has it
       name: 'patch from release/0.5.x before the forward-port',
       tag: 'tag-v0.5.4.md', version: '0.5.4', previous: 'site-0.5.3.md',
-      want: ['0.5.4', '0.5.3'],
+      want: ['0.5.4', '0.5.3'], kept: [],
     },
     {
       name: 'patch of an older minor keeps the newer release first',
       tag: 'tag-v0.5.5.md', version: '0.5.5', previous: 'tag-v0.6.0.md',
-      want: ['0.6.0', '0.5.5', '0.5.4', '0.5.3'],
+      want: ['0.6.0', '0.5.5', '0.5.4', '0.5.3'], kept: ['0.6.0'],
     },
     {
       name: 'first sync',
       tag: 'tag-v0.5.4.md', version: '0.5.4', previous: undefined,
-      want: ['0.5.4', '0.5.3'],
+      want: ['0.5.4', '0.5.3'], kept: [],
     },
   ];
   for (const c of cases) {
-    const out = mergeChangelog(fixture(c.tag), c.version, c.previous && fixture(c.previous));
-    assert.deepEqual(versions(out), c.want, c.name);
-    assert.doesNotMatch(out, /\[Unreleased\]/, c.name);
-    assert.equal(mergeChangelog(fixture(c.tag), c.version, out), out, `${c.name}: second run changes nothing`);
+    const { text, kept } = mergeChangelog(fixture(c.tag), c.version, c.previous && fixture(c.previous));
+    assert.deepEqual(versions(text), c.want, c.name);
+    assert.deepEqual(kept, c.kept, c.name);
+    assert.doesNotMatch(text, /\[Unreleased\]/, c.name);
+    assert.equal(mergeChangelog(fixture(c.tag), c.version, text).text, text, `${c.name}: second run changes nothing`);
   }
 });
 
 test('mergeChangelog takes a version from the tag over the previous copy', () => {
   const previous = fixture('tag-v0.5.4.md').replace('Fix in 0.5.4.', 'Old wording.');
-  const out = mergeChangelog(fixture('tag-v0.6.0.md'), '0.6.0', previous);
+  const out = mergeChangelog(fixture('tag-v0.6.0.md'), '0.6.0', previous).text;
   assert.match(out, /Fix in 0\.5\.4\./);
   assert.doesNotMatch(out, /Old wording/);
 });

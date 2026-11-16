@@ -45,7 +45,8 @@ When a stable Dockmesh release becomes GitHub's latest release, the app's releas
 
 1. Docs are copied from the tag and `src/data/release.json` records it as the current version.
 2. The tag's `CHANGELOG.md` is merged into `src/data/changelog.md`: every release in the tag's file, plus the ones
-   only the previous copy has (a patch not yet forward-ported), newest first.
+   only the previous copy has (a patch not yet forward-ported), newest first. The run log lists those carried-over
+   releases; a section deleted upstream stays until it is removed from `src/data/changelog.md` by hand.
 3. The site is built and `scripts/release-sync.mjs check` makes sure the changelog page of the release, the
    changelog index and every docs page exist.
 4. A `docs: sync for vX.Y.Z` PR is opened and squash-merged.

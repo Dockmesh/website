@@ -46,15 +46,17 @@ export function splitChangelog(src) {
 /**
  * The site's changelog after syncing `version`: every section of the tag's CHANGELOG, plus the
  * sections only the previous synced copy has (a patch released from a release branch before it was
- * forward-ported to main), newest version first.
+ * forward-ported to main), newest version first. `kept` lists those carried-over versions: a section
+ * deleted upstream stays until it is removed from src/data/changelog.md by hand.
  */
 export function mergeChangelog(tagSrc, version, previousSrc = '') {
   const tagged = splitChangelog(tagSrc);
   if (!tagged.sections.has(version)) throw new Error(`CHANGELOG.md of v${version} has no "## [${version}]" section`);
   const merged = new Map(splitChangelog(previousSrc).sections);
+  const kept = [...merged.keys()].filter((v) => !tagged.sections.has(v));
   for (const [v, s] of tagged.sections) merged.set(v, s);
   const versions = [...merged.keys()].sort((a, b) => compareVersions(b, a));
-  return `${[NOTE, tagged.preamble, ...versions.map((v) => merged.get(v))].join('\n\n')}\n`;
+  return { text: `${[NOTE, tagged.preamble, ...versions.map((v) => merged.get(v))].join('\n\n')}\n`, kept };
 }
 
 /** Problems with a built site for `version`; `has(path)` and `read(path)` look into dist/. */

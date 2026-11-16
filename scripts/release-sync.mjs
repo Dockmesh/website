@@ -47,8 +47,10 @@ try {
       src = await res.text();
     }
     const previous = existsSync(CHANGELOG) ? readFileSync(CHANGELOG, 'utf8') : '';
-    writeFileSync(CHANGELOG, mergeChangelog(src, version, previous));
+    const { text, kept } = mergeChangelog(src, version, previous);
+    writeFileSync(CHANGELOG, text);
     console.log(`src/data/changelog.md synced from ${from ?? arg}`);
+    if (kept.length) console.log(`::notice::kept from the previous copy, not in ${arg}'s CHANGELOG.md: ${kept.join(', ')}`);
   } else if (cmd === 'check') {
     if (!/^\d+\.\d+\.\d+$/.test(arg ?? '')) die('usage: check <X.Y.Z>');
     const nav = JSON.parse(readFileSync(join(ROOT, 'src/data/docs-nav.json'), 'utf8'));
