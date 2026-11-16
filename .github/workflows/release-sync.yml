@@ -46,7 +46,7 @@ jobs:
 
       - run: npm test
 
-      - name: check tag
+      - name: check tag and plan
         id: rel
         run: |
           if ! rel=$(gh release view "$TAG" -R Dockmesh/dockmesh --json publishedAt,isPrerelease); then

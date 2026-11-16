@@ -3,11 +3,11 @@
 const NOTE = '<!-- Synced from the Dockmesh release tags by scripts/release-sync.mjs. Edit CHANGELOG.md in Dockmesh/dockmesh, not this copy. -->';
 const HEADER = /^## \[(\d+\.\d+\.\d+)\][^\n]*$/gm;
 
-export const parseTag = (tag) => {
+export function parseTag(tag) {
   const m = /^v(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?$/.exec(tag ?? '');
   if (!m) return null;
   return { version: `${m[1]}.${m[2]}.${m[3]}`, prerelease: Boolean(m[4]) };
-};
+}
 
 export function compareVersions(a, b) {
   const pa = a.split('.').map(Number);
@@ -35,7 +35,7 @@ export function splitChangelog(src) {
   const firstAny = text.search(/^## /m);
   const preamble = (firstAny < 0 ? text : text.slice(0, firstAny)).replace(NOTE, '').trim();
   const sections = new Map();
-  heads.forEach((h, i) => {
+  heads.forEach((h) => {
     const end = text.slice(h.index + h[0].length).search(/^## /m);
     const body = end < 0 ? text.slice(h.index) : text.slice(h.index, h.index + h[0].length + end);
     sections.set(h[1], body.trimEnd());

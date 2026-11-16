@@ -24,8 +24,8 @@ npm run preview    # serve dist/
   `src/data/docs-nav.json`. Don't edit the copied pages here.
 - **Current version** is `src/data/release.json`, written by the release sync below; without it the newest
   changelog entry is used.
-- **Changelog** pages are built from `src/data/changelog.md`, the app's
-  [`CHANGELOG.md`](https://github.com/Dockmesh/dockmesh/blob/main/CHANGELOG.md) as of the last synced release tag,
+- **Changelog** pages are built from `src/data/changelog.md`, the app's `CHANGELOG.md` as of the
+  last synced [release tag](https://github.com/Dockmesh/dockmesh/releases),
   written by the release sync below. Don't edit it here. `DOCKMESH_CHANGELOG=/path/to/CHANGELOG.md` builds from
   another file.
 - **Screenshots** are in `src/assets/shots/` (a `-dark` and `-light` WebP each) and listed in

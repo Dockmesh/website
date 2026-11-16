@@ -3,8 +3,6 @@ import synced from '../data/changelog.md?raw';
 
 // The release sync writes src/data/changelog.md from each release tag, so a build of any website commit
 // shows the releases that were synced into it. DOCKMESH_CHANGELOG may point at another file instead.
-const SOURCE = 'src/data/changelog.md';
-
 export type Severity = 'security' | 'recommended' | 'normal';
 /** A changelog bullet; upgrade notes also carry their id and, unless they are for everyone, an audience label. */
 export interface Item {
@@ -75,7 +73,7 @@ let cached: Promise<Release[]> | undefined;
 export function getReleases(): Promise<Release[]> {
   cached ??= load().then((src) => {
     const rels = parseChangelog(src);
-    if (!rels.length) throw new Error(`Changelog: no release sections found in ${process.env.DOCKMESH_CHANGELOG || SOURCE}; has the format changed?`);
+    if (!rels.length) throw new Error(`Changelog: no release sections found in ${process.env.DOCKMESH_CHANGELOG || 'src/data/changelog.md'}; has the format changed?`);
     return rels;
   });
   return cached;

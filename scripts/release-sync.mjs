@@ -9,7 +9,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkBuild, mergeChangelog, plan } from './lib/release.mjs';
+import { checkBuild, mergeChangelog, parseTag, plan } from './lib/release.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CHANGELOG = join(ROOT, 'src/data/changelog.md');
@@ -33,7 +33,9 @@ try {
     const p = plan(arg, { prerelease: rest.includes('--prerelease'), current });
     console.log(`mode=${p.mode}\nversion=${p.version}`);
   } else if (cmd === 'changelog') {
-    const { version } = plan(arg);
+    const t = parseTag(arg);
+    if (!t || t.prerelease) die(`tag "${arg}" is not vX.Y.Z`);
+    const { version } = t;
     let src;
     const from = flag('--from');
     if (from) {
