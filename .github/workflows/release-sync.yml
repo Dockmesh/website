@@ -1,6 +1,9 @@
-# Syncs the docs from a Dockmesh release and lands them on main through a
-# squash-merged PR; Cloudflare Workers Builds deploys the merge like any other
-# push. The app's release workflow dispatches `app-release` with {"tag": ...}.
+# Syncs the site from a Dockmesh release tag and lands it on main through a
+# squash-merged PR, then waits until Cloudflare Workers Builds has deployed
+# that commit and the release's changelog page is live. Docs and changelog
+# come from the tag, never from the app's main: a patch released from a
+# release branch is not on main until it is forward-ported. The app's release
+# workflow dispatches `app-release` with {"tag": ...}.
 name: release sync
 
 on:
@@ -24,23 +27,11 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      checks: read
     env:
       TAG: ${{ github.event.client_payload.tag || inputs.tag }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: check tag
-        id: rel
-        run: |
-          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::tag \"$TAG\" is not vX.Y.Z"
-            exit 1
-          fi
-          if ! published=$(gh release view "$TAG" -R Dockmesh/dockmesh --json publishedAt --jq .publishedAt); then
-            echo "::error::$TAG is not a release of Dockmesh/dockmesh"
-            exit 1
-          fi
-          echo "date=${published%%T*}" >> "$GITHUB_OUTPUT"
-
       # main, not the dispatching ref: a manual run from another branch must still sync main
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -53,38 +44,81 @@ jobs:
 
       - run: npm ci
 
+      - run: npm test
+
+      - name: check tag
+        id: rel
+        run: |
+          if ! rel=$(gh release view "$TAG" -R Dockmesh/dockmesh --json publishedAt,isPrerelease); then
+            echo "::error::$TAG is not a release of Dockmesh/dockmesh"
+            exit 1
+          fi
+          pre=()
+          if [ "$(jq -r .isPrerelease <<<"$rel")" = true ]; then pre=(--prerelease); fi
+          node scripts/release-sync.mjs plan "$TAG" "${pre[@]}" >> "$GITHUB_OUTPUT"
+          published=$(jq -r .publishedAt <<<"$rel")
+          echo "date=${published%%T*}" >> "$GITHUB_OUTPUT"
+
+      - name: skip pre-release
+        if: steps.rel.outputs.mode == 'skip'
+        run: echo "::notice::$TAG is a pre-release; the site only follows stable releases"
+
+      # an older minor's patch only adds its changelog page; docs and the current version stay
       - name: sync docs
+        if: steps.rel.outputs.mode == 'full'
         run: npm run sync-docs -- "$TAG"
 
+      - name: sync changelog
+        if: steps.rel.outputs.mode != 'skip'
+        run: node scripts/release-sync.mjs changelog "$TAG"
+
       - name: record release
+        if: steps.rel.outputs.mode == 'full'
         env:
           DATE: ${{ steps.rel.outputs.date }}
         run: |
           jq -n --arg version "${TAG#v}" --arg date "$DATE" --arg tag "$TAG" \
             '{version: $version, date: $date, tag: $tag}' > src/data/release.json
 
-      - run: npm run build
+      - name: build
+        if: steps.rel.outputs.mode != 'skip'
+        env:
+          VERSION: ${{ steps.rel.outputs.version }}
+        run: |
+          npm run build
+          node scripts/release-sync.mjs check "$VERSION"
 
       - name: open and merge PR
+        id: pr
+        if: steps.rel.outputs.mode != 'skip'
+        env:
+          MODE: ${{ steps.rel.outputs.mode }}
         run: |
           git add -A src/content/docs/docs src/data
           if git diff --cached --quiet; then
             echo "main is already synced for $TAG"
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          pages=$(git diff --cached --name-only -- src/content/docs/docs | grep -c '\.md$' || true)
-          if [ "$pages" -gt 0 ]; then docs="- Docs from Dockmesh $TAG, $pages pages changed"; else docs="- No docs changes in $TAG"; fi
+          if [ "$MODE" = full ]; then
+            pages=$(git diff --cached --name-only -- src/content/docs/docs | grep -c '\.md$' || true)
+            if [ "$pages" -gt 0 ]; then docs="- Docs from Dockmesh $TAG, $pages pages changed"; else docs="- No docs changes in $TAG"; fi
+            shown="- The site shows $TAG as the current version and lists it in the changelog"
+          else
+            docs="- Docs and the current version stay; $TAG is a patch of an older minor"
+            shown="- The changelog lists $TAG"
+          fi
           cat > "$RUNNER_TEMP/body.md" <<EOF
           **What**
           $docs
-          - The site shows $TAG as the current version and lists it in the changelog
+          $shown
 
           **Why**
           - Dockmesh $TAG was released
 
           **Tested**
-          - Site build with the live changelog
+          - Site build with the changelog of $TAG
           EOF
 
           branch="release-sync/$TAG"
@@ -108,9 +142,57 @@ jobs:
           # mergeability is computed asynchronously right after the PR is opened
           for i in 1 2 3 4 5 6; do
             if gh pr merge "$num" --squash --match-head-commit "$sha" --subject "$title (#$num)" --body-file "$RUNNER_TEMP/body.md"; then
+              merged=$(gh pr view "$num" --json mergeCommit --jq '.mergeCommit.oid // empty')
+              if [ -z "$merged" ]; then
+                echo "::error::#$num reports no merge commit"
+                exit 1
+              fi
+              echo "sha=$merged" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             sleep 10
           done
           echo "::error::could not merge #$num; merge it by hand"
           exit 1
+
+      - name: wait for the deploy
+        if: steps.rel.outputs.mode != 'skip'
+        env:
+          SHA: ${{ steps.pr.outputs.sha }}
+        run: |
+          # Workers Builds reports each build of main as a check run on the commit
+          deadline=$((SECONDS + 1200))
+          while :; do
+            run=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/check-runs?per_page=100" \
+              --jq '[.check_runs[] | select(.app.slug == "cloudflare-workers-and-pages")] | sort_by(.id) | last // empty | "\(.status) \(.conclusion) \(.html_url)"' || true)
+            case "$run" in
+              "completed success "*) echo "deployed $SHA"; break ;;
+              "completed "*) echo "::error::the Cloudflare build of $SHA failed: ${run#completed }"; exit 1 ;;
+            esac
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::no finished Cloudflare build for $SHA after 20 minutes (${run:-no check run}); retry the build in the Cloudflare dashboard"
+              exit 1
+            fi
+            sleep 20
+          done
+
+      - name: check the live changelog page
+        if: steps.rel.outputs.mode != 'skip'
+        env:
+          VERSION: ${{ steps.rel.outputs.version }}
+          SHA: ${{ steps.pr.outputs.sha }}
+        run: |
+          url="https://dockmesh.dev/changelog/$VERSION/"
+          deadline=$((SECONDS + 600))
+          while :; do
+            code=$(curl -sS -o "$RUNNER_TEMP/page.html" -w '%{http_code}' "$url?sync=$SHA" || true)
+            if [ "$code" = 200 ] && grep -q "Dockmesh $VERSION" "$RUNNER_TEMP/page.html"; then
+              echo "$url is live"
+              exit 0
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::$url answered HTTP ${code:-none} 10 minutes after the deploy of $SHA"
+              exit 1
+            fi
+            sleep 20
+          done

@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
+import synced from '../data/changelog.md?raw';
 
-// The changelog lives in the app repo; the site reads it at build time.
-// DOCKMESH_CHANGELOG may point at a local file instead (offline builds).
-const SOURCE = 'https://raw.githubusercontent.com/Dockmesh/dockmesh/main/CHANGELOG.md';
+// The release sync writes src/data/changelog.md from each release tag, so a build of any website commit
+// shows the releases that were synced into it. DOCKMESH_CHANGELOG may point at another file instead.
+const SOURCE = 'src/data/changelog.md';
 
 export type Severity = 'security' | 'recommended' | 'normal';
 /** A changelog bullet; upgrade notes also carry their id and, unless they are for everyone, an audience label. */
@@ -22,21 +23,12 @@ export interface Release {
 
 async function load(): Promise<string> {
   const local = process.env.DOCKMESH_CHANGELOG;
-  if (local) {
-    try {
-      return await readFile(local, 'utf8');
-    } catch (err) {
-      throw new Error(`Changelog: cannot read DOCKMESH_CHANGELOG=${local}: ${(err as Error).message}`);
-    }
-  }
-  let res: Response;
+  if (!local) return synced;
   try {
-    res = await fetch(SOURCE, { signal: AbortSignal.timeout(20_000) });
+    return await readFile(local, 'utf8');
   } catch (err) {
-    throw new Error(`Changelog: cannot fetch ${SOURCE} (${(err as Error).message}). Set DOCKMESH_CHANGELOG to a local CHANGELOG.md to build offline.`);
+    throw new Error(`Changelog: cannot read DOCKMESH_CHANGELOG=${local}: ${(err as Error).message}`);
   }
-  if (!res.ok) throw new Error(`Changelog: ${SOURCE} answered HTTP ${res.status}. The build needs the app's CHANGELOG.md.`);
-  return res.text();
 }
 
 export function parseChangelog(src: string): Release[] {
