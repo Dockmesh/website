@@ -118,7 +118,7 @@ export const FAQ: [string, string][] = [
   ['What happens to my containers if Dockmesh stops?', 'They keep running; they are ordinary Docker containers. Stacks are compose files on disk. By default Dockmesh stores each stack\'s <code>.env</code> encrypted as <code>.env.age</code>; decrypt it with your age key before you run <code>docker compose</code> by hand. The <a href="/docs/operations/uninstall/">uninstall guide</a> walks through it.'],
   ['Does it send telemetry?', 'Dockmesh collects no usage data. Every two hours the server asks GitHub for the latest release; that request carries the Dockmesh version in its user agent and nothing else, and you can turn the check off. Other connections are the ones its features need — container registries for update checks and pulls, Let\'s Encrypt, Grype\'s vulnerability database — and the ones you configure, such as backup targets, notifications and sign-in providers.'],
   ['Does it run on a Raspberry Pi?', 'Yes, on 64-bit Linux. Server and agent are built for amd64 and arm64, and the installers pick the right binary for the host.'],
-  ['Does it support Kubernetes or Swarm?', 'No. Dockmesh drives plain Docker engines and compose files. If you need a cluster scheduler, Portainer or Rancher are the better fit.'],
+  ['Does it support Kubernetes or Swarm?', 'Docker Swarm, read-only: add a Swarm as a cluster and Dockmesh shows its nodes, services, tasks, service logs, overlay networks and stack volumes. It does not deploy stacks to the Swarm or change it yet; stacks still go to one host you pick. Kubernetes is not supported. The <a href="/docs/features/swarm/">Swarm page</a> lists what is covered.'],
   ['How is the project funded and maintained?', 'It is maintained in spare time by its author. There is no company behind it and nothing to sell.'],
   ['Where do I get help?', 'In GitHub Discussions for questions and ideas, and GitHub Issues for bugs. Security problems go to GitHub\'s private vulnerability reporting.'],
 ];
@@ -150,7 +150,7 @@ export const RIVALS = [
   {
     name: 'Portainer',
     tagline: 'The commercial option with the widest scope.',
-    goodAt: ['Covers Docker, Swarm, Kubernetes and ACI in one UI; Dockmesh does Docker and Compose only.', 'Commercial support with response times. Dockmesh has GitHub and nothing else.', 'A much longer track record and a large installed base.'],
+    goodAt: ['Covers Docker, Swarm, Kubernetes and ACI in one UI, and manages Swarm stacks; Dockmesh shows a Swarm read-only and has no Kubernetes.', 'Commercial support with response times. Dockmesh has GitHub and nothing else.', 'A much longer track record and a large installed base.'],
     gap: ['Custom roles, SSO, audit log and CVE scans are in the Business Edition.', 'Stacks live in its database rather than as files on disk.'],
     verdict: 'If you manage Kubernetes too or need a vendor contract, pick Portainer. For plain Docker with Business-Edition features, Dockmesh costs nothing.',
   },
